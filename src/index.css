@@ -65,22 +65,34 @@ h3, p { margin: 0; }
 .header-center { display: flex; align-items: center; gap: 12px; flex: 0 1 732px; margin: 0 40px; }
 .search { display: flex; flex: 1; height: 40px; }
 .search-box {
-  flex: 1; display: flex; align-items: center; padding: 0 4px 0 16px;
+  position: relative; flex: 1; display: flex; align-items: center; padding: 0 4px 0 16px;
   border: 1px solid var(--search-border); border-right: 0;
   border-radius: 40px 0 0 40px; background: var(--search-bg);
 }
-.search-box:focus-within { border-color: #1c62b9; }
+/* 포커스되면 왼쪽에 돋보기가 나타나고 테두리가 파래져요 (YouTube와 같은 동작) */
+.search-leading-icon { display: none; margin-right: 12px; }
+.search-box:focus-within { border-color: #1c62b9; margin-left: -32px; padding-left: 16px; }
+.search-box:focus-within .search-leading-icon { display: flex; }
 .search-input {
   width: 100%; border: 0; outline: 0; background: none;
   color: var(--text); font: inherit; font-size: 16px;
 }
 .search-input::placeholder { color: #888; }
+.search-clear { width: 36px; height: 36px; }
 .search-btn {
   display: grid; place-items: center; width: 64px;
   border: 1px solid var(--search-border); border-radius: 0 40px 40px 0;
   background: var(--search-btn-bg);
 }
 .search-btn:hover { background: #303030; }
+.suggestions {
+  position: absolute; top: calc(100% + 4px); left: 0; right: -64px; z-index: 150;
+  margin: 0; padding: 16px 0; list-style: none;
+  border-radius: 12px; background: #212121; box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+}
+.suggestions li { display: flex; align-items: center; gap: 16px; height: 32px; padding: 0 16px; font-size: 16px; font-weight: 500; cursor: default; }
+.suggestions li:hover, .suggestions li.highlighted { background: #3d3d3d; }
+.mobile-back, .mobile-search-btn { display: none; }
 
 .header-end { display: flex; align-items: center; gap: 8px; }
 .create-btn {
@@ -254,6 +266,20 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .not-found-emoji { font-size: 64px; }
 .not-found .pill { margin-top: 12px; color: var(--text); }
 
+/* =========================================================
+   검색 결과
+   ========================================================= */
+.results { display: flex; flex-direction: column; gap: 16px; max-width: 1096px; margin: 0 auto; padding: 16px 24px; }
+.result-row { display: flex; gap: 16px; }
+.result-thumb { flex: 1 1 0; min-width: 240px; max-width: 500px; }
+.result-text { flex: 1.2 1 0; min-width: 0; }
+.result-title-row { display: flex; justify-content: space-between; gap: 8px; }
+.result-title-row:hover .card-menu, .result-row:hover .card-menu { opacity: 1; }
+.result-title { font-size: 18px; font-weight: 400; line-height: 26px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.result-meta { color: var(--text-sub); font-size: 12px; line-height: 18px; }
+.result-channel { display: flex; align-items: center; gap: 8px; padding: 12px 0; color: var(--text-sub); font-size: 12px; }
+.result-desc { color: var(--text-sub); font-size: 12px; line-height: 18px; }
+
 /* 폭이 좁으면 추천 목록을 영상 아래로 */
 @media (max-width: 1016px) {
   .watch { flex-direction: column; }
@@ -282,7 +308,22 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
   .chips { padding: 0 12px; }
   /* 모바일 헤더: 검색창 대신 돋보기 아이콘만 */
   .header-center { flex: 0 0 auto; margin: 0 0 0 auto; }
-  .search-box, .header-center .icon-btn.filled, .create-btn, .logo-region { display: none; }
-  .search-btn { width: 40px; border: 0; border-radius: 50%; background: none; }
+  .header-center { display: none; }
+  .create-btn, .logo-region { display: none; }
+  .mobile-search-btn { display: grid; }
   .header-start { min-width: 0; }
+  /* 모바일 검색 모드: 헤더 전체가 [← 검색창] 으로 바뀜 */
+  .header.mobile-search .header-start, .header.mobile-search .header-end { display: none; }
+  .header.mobile-search .header-center { display: flex; flex: 1; gap: 8px; margin: 0; }
+  .header.mobile-search .mobile-back { display: grid; }
+  .header.mobile-search .mic-btn { display: none; }
+  .search-box:focus-within { margin-left: 0; }
+  .search-box:focus-within .search-leading-icon { display: none; }
+  .suggestions { position: fixed; top: var(--header-h); left: 0; right: 0; border-radius: 0; }
+  .results { padding: 0 0 16px; }
+  .result-row { flex-direction: column; gap: 12px; }
+  .result-thumb { width: 100%; max-width: none; }
+  .result-thumb .thumbnail { border-radius: 0; }
+  .result-text { padding: 0 12px; }
+  .result-desc { display: none; }
 }

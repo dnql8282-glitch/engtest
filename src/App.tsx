@@ -4,6 +4,7 @@ import { Header } from './web/components/Header';
 import { Sidebar, type SidebarVariant } from './web/components/Sidebar';
 import { HomePage } from './web/pages/HomePage';
 import { WatchPage } from './web/pages/WatchPage';
+import { ResultsPage } from './web/pages/ResultsPage';
 import { NotFoundPage } from './web/pages/NotFoundPage';
 import { useMediaQuery } from './web/hooks/useMediaQuery';
 
@@ -33,6 +34,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/watch/:videoId" element={<WatchPage />} />
+          <Route path="/results" element={<ResultsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

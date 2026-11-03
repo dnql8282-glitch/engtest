@@ -1,6 +1,7 @@
 import type { Category, Channel, VideoWithChannel } from './types';
 import { videos } from './data/videos';
 import { channels } from './data/channels';
+import { searchVideos as runSearch, suggest } from './search';
 
 // "서비스" 계층: 화면은 데이터가 어디서 오는지 몰라도 되게 여기서만 데이터를 다뤄요.
 // 지금은 메모리의 가짜 데이터를 쓰지만, 나중에 서버를 붙이면 이 파일 안쪽만 fetch로 바꾸면 됩니다.
@@ -50,4 +51,15 @@ export async function getRelatedVideos(id: string): Promise<VideoWithChannel[]> 
 export async function getChannels(): Promise<Channel[]> {
   await delay(100);
   return channels;
+}
+
+/** 검색 결과 (서버가 생기면 GET /search?q=... 에 해당) */
+export async function searchVideos(query: string): Promise<VideoWithChannel[]> {
+  await delay(250);
+  return runSearch(allWithChannel(), query);
+}
+
+/** 검색어 자동완성. 타이핑할 때마다 불리니까 지연 없이 바로 돌려줘요. */
+export async function getSuggestions(query: string): Promise<string[]> {
+  return suggest(allWithChannel(), query);
 }
