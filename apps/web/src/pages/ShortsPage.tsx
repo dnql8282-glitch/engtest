@@ -9,6 +9,7 @@ import { useAsync } from '@mytube/hooks/useAsync';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { Icon } from '../components/Icon';
 import { SubscribeButton } from '../components/SubscribeButton';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 // Shorts: 세로로 한 장씩 넘겨 보는 짧은 영상 (CSS scroll-snap)
 // 화면에 보이는 영상만 재생하고, 나머지는 멈춰요 (IntersectionObserver).
@@ -16,6 +17,7 @@ import { SubscribeButton } from '../components/SubscribeButton';
 export function ShortsPage() {
   const { data: shorts } = useAsync(getShorts, 'all');
   const [muted, setMuted] = useState(true); // 브라우저 자동재생 정책: 처음엔 음소거로 시작
+  useDocumentTitle('Shorts');
 
   useEffect(() => {
     playerStore.close();

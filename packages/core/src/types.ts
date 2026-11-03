@@ -41,4 +41,7 @@ export interface Comment {
   createdAt: string;
   likes: number;
   mine: boolean; // 내가 쓴 댓글이면 삭제 가능
+  parentId?: string; // 답글이면 원래 댓글의 id
 }
+
+export type CommentSort = 'top' | 'newest';

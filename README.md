@@ -64,7 +64,8 @@ docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 
 - [x] **3단계**: 검색 기능 (자동완성, 결과 페이지, 테스트)
 - [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
 - [x] **5단계**: 시청 기록, 좋아요/나중에 볼 재생목록, 구독 피드, 인기 급상승, 채널 페이지, 테마 전환
-- [x] **6단계**: iOS·안드로이드 앱 (YouTube iOS 앱 UI, 미니 플레이어, PiP, 백그라운드·잠금 화면 재생)
+- [x] **6단계**: iOS·안드로이드 앱 (YouTube iOS 앱 UI, 미니 플레이어, PiP, 백그라운드·잠금 화면 재생) — ⏸ 보류 중
+- [x] **웹 다듬기 W1~W5**: 실제 영상, YouTube 스타일 플레이어·단축키, 웹 미니 플레이어, 모바일 레이아웃, Shorts, 공유·알림·답글 등
 
 ## 주요 화면과 주소
 
@@ -73,7 +74,9 @@ docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 
 | `/` , `/?category=게임` | 홈 (카테고리) |
 | `/watch/v1` | 시청 페이지 (구독, 좋아요, 댓글) |
 | `/results?search_query=요리` | 검색 결과 |
-| `/feed/trending` · `/feed/subscriptions` · `/feed/history` | 인기 급상승 · 구독 · 시청 기록 |
+| `/feed/trending` · `/feed/subscriptions` · `/feed/history` · `/feed/you` | 인기 급상승 · 구독 · 시청 기록 · 나 |
+| `/shorts` | Shorts (세로 넘기기) |
+| `/watch/v1?t=95` | 1분 35초부터 재생 |
 | `/playlist?list=LL` · `/playlist?list=WL` | 좋아요 표시한 동영상 · 나중에 볼 동영상 |
 | `/channel/c1` | 채널 페이지 |
 

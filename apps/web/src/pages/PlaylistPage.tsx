@@ -6,6 +6,7 @@ import { useUserState } from '@mytube/hooks/useUserStore';
 import { ListSkeleton, VideoListItem } from '../components/VideoListItem';
 import { EmptyState } from '../components/EmptyState';
 import { NotFoundPage } from './NotFoundPage';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 // 재생목록: /playlist?list=LL (좋아요 표시한 동영상) / ?list=WL (나중에 볼 동영상)
 // 두 목록은 데이터 출처만 다르고 화면은 같아서, 한 페이지가 주소의 list 값에 따라 출처를 골라요.
@@ -21,6 +22,7 @@ export function PlaylistPage() {
   const ids = listId === 'LL' ? likedVideoIds(user) : listId === 'WL' ? user.watchLater : [];
   const { data: videos } = useAsync(getVideosByIds, ids.join(','));
 
+  useDocumentTitle(listId === 'LL' ? '좋아요 표시한 동영상' : listId === 'WL' ? '나중에 볼 동영상' : null);
   if (listId !== 'LL' && listId !== 'WL') return <NotFoundPage />;
   const meta = PLAYLISTS[listId];
   const cover = videos?.[0];

@@ -109,3 +109,37 @@ export async function getShorts(): Promise<VideoWithChannel[]> {
     .filter((v) => v.durationSec <= SHORTS_MAX_SEC)
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
 }
+
+// ── 알림: 구독한 채널의 최근 업로드 ──────────────────────────────────────────
+export interface Notification {
+  id: string;
+  video: VideoWithChannel;
+  createdAt: string;
+}
+
+/** 구독 채널 키("c1,c2")로 최근 업로드 알림 목록 (최신순, 최대 limit개) */
+export async function getNotifications(channelIdsKey: string, limit = 8): Promise<Notification[]> {
+  await delay(120);
+  const ids = channelIdsKey ? channelIdsKey.split(',') : [];
+  return allWithChannel()
+    .filter((v) => ids.includes(v.channelId))
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt))
+    .slice(0, limit)
+    .map((v) => ({ id: `n-${v.id}`, video: v, createdAt: v.uploadedAt }));
+}
+
+/** 읽지 않은 알림 수: 마지막으로 알림을 열어 본 뒤에 생긴 것 */
+export function countUnread(list: Notification[], seenAt: string | null): number {
+  if (!seenAt) return list.length;
+  return list.filter((n) => n.createdAt > seenAt).length;
+}
+
+// ── 채널 영상 정렬 ──────────────────────────────────────────────────────────
+export type ChannelSort = 'latest' | 'popular' | 'oldest';
+
+export function sortChannelVideos(list: VideoWithChannel[], sort: ChannelSort): VideoWithChannel[] {
+  const copy = [...list];
+  if (sort === 'popular') return copy.sort((a, b) => b.views - a.views);
+  if (sort === 'oldest') return copy.sort((a, b) => a.uploadedAt.localeCompare(b.uploadedAt));
+  return copy.sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+}

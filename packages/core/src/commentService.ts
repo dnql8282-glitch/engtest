@@ -1,4 +1,4 @@
-import type { Comment } from './types';
+import type { Comment, CommentSort } from './types';
 import { videos } from './data/videos';
 import { seedComments } from './data/comments';
 import { readJson, writeJson } from './storage';
@@ -21,7 +21,7 @@ export async function getComments(videoId: string): Promise<Comment[]> {
   return [...mine, ...seedComments(videoId, video.uploadedAt)]; // 내 댓글이 맨 위
 }
 
-export async function addComment(videoId: string, text: string): Promise<Comment> {
+export async function addComment(videoId: string, text: string, parentId?: string): Promise<Comment> {
   const trimmed = text.trim();
   if (!trimmed) throw new Error('빈 댓글은 등록할 수 없어요');
   const comment: Comment = {
@@ -33,14 +33,46 @@ export async function addComment(videoId: string, text: string): Promise<Comment
     createdAt: new Date().toISOString(),
     likes: 0,
     mine: true,
+    ...(parentId ? { parentId } : {}),
   };
   await writeJson(KEY, [...(await loadMine()), comment]);
   return comment;
 }
 
+/** 댓글 삭제. 그 댓글에 달린 내 답글도 함께 지워요. */
 export async function deleteComment(commentId: string): Promise<void> {
   await writeJson(
     KEY,
-    (await loadMine()).filter((c) => c.id !== commentId),
+    (await loadMine()).filter((c) => c.id !== commentId && c.parentId !== commentId),
   );
+}
+
+// ── 순수 함수: 정렬과 답글 묶기 (화면과 무관, 테스트 가능) ──────────────────
+
+export interface CommentThread {
+  comment: Comment;
+  replies: Comment[]; // 오래된 순 (대화 흐름대로)
+}
+
+/**
+ * 댓글 목록을 "댓글 + 답글들" 묶음으로 만들고 정렬해요.
+ *  top:    좋아요 많은 순 (단, 방금 내가 쓴 댓글은 YouTube처럼 맨 위)
+ *  newest: 최신순
+ */
+export function buildThreads(comments: Comment[], sort: CommentSort): CommentThread[] {
+  const replies = new Map<string, Comment[]>();
+  for (const c of comments) {
+    if (!c.parentId) continue;
+    replies.set(c.parentId, [...(replies.get(c.parentId) ?? []), c]);
+  }
+  const top = comments.filter((c) => !c.parentId);
+  const sorted = [...top].sort((a, b) => {
+    if (sort === 'newest') return b.createdAt.localeCompare(a.createdAt);
+    if (a.mine !== b.mine) return a.mine ? -1 : 1;
+    return b.likes - a.likes || b.createdAt.localeCompare(a.createdAt);
+  });
+  return sorted.map((comment) => ({
+    comment,
+    replies: (replies.get(comment.id) ?? []).sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+  }));
 }

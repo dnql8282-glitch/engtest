@@ -9,7 +9,7 @@ export function VideoCard({ video, showChannel = true }: { video: VideoWithChann
   return (
     <article className="video-card">
       <Link to={`/watch/${video.id}`}>
-        <Thumbnail video={video} />
+        <Thumbnail video={video} preview />
       </Link>
       <div className="video-details">
         {showChannel && (

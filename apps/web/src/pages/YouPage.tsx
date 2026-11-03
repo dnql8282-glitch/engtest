@@ -5,6 +5,7 @@ import { useAsync } from '@mytube/hooks/useAsync';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { Thumbnail } from '../components/Thumbnail';
 import { Icon, type IconName } from '../components/Icon';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 // "나" 페이지: /feed/you — 프로필, 최근 기록(가로 스크롤), 재생목록, 설정
 export function YouPage() {
@@ -12,6 +13,7 @@ export function YouPage() {
   const { data: history = [] } = useAsync(getVideosByIds, user.history.slice(0, 12).map((h) => h.videoId).join(','));
   const liked = likedVideoIds(user);
   const dark = user.theme === 'dark';
+  useDocumentTitle('나');
 
   return (
     <div className="you-page">

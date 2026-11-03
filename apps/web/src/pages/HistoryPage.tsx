@@ -6,6 +6,7 @@ import { useUserState } from '@mytube/hooks/useUserStore';
 import { ListSkeleton, VideoListItem } from '../components/VideoListItem';
 import { EmptyState } from '../components/EmptyState';
 import { Icon } from '../components/Icon';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 // 시청 기록: /feed/history — 날짜별로 묶어서 보여줘요
 export function HistoryPage() {
@@ -13,6 +14,7 @@ export function HistoryPage() {
   const { data: videos } = useAsync(getVideosByIds, history.map((h) => h.videoId).join(','));
   const byId = new Map(videos?.map((v) => [v.id, v]));
   const groups = groupHistoryByDay(history);
+  useDocumentTitle('시청 기록');
 
   return (
     <div className="results history">

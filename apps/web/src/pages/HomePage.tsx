@@ -3,6 +3,7 @@ import type { Category, VideoWithChannel } from '@mytube/core/types';
 import { categories, getVideos } from '@mytube/core/videoService';
 import { VideoCard } from '../components/VideoCard';
 import { useAsync } from '@mytube/hooks/useAsync';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 // 홈: 카테고리 칩 + 영상 그리드
 // 선택한 카테고리는 주소(?category=음악)에 담아요. 사이드바 "탐색" 메뉴도 이 주소로 연결돼요.
@@ -11,6 +12,7 @@ export function HomePage() {
   const raw = params.get('category');
   const category: Category = categories.includes(raw as Category) ? (raw as Category) : '전체';
   const { data: videos, loading } = useAsync(getVideos, category);
+  useDocumentTitle(null);
 
   return (
     <div className="home">

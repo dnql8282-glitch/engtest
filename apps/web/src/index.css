@@ -571,6 +571,71 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 }
 
 /* =========================================================
+   공용: 키보드 포커스, 토스트, 대화상자, 알림, 배지
+   ========================================================= */
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.yt-player :focus-visible { outline-color: #fff; }
+
+.toaster { position: fixed; left: 24px; bottom: 24px; z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  padding: 14px 20px; border-radius: 8px; background: var(--text); color: var(--bg);
+  font-size: 14px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); animation: toast-in 0.2s ease-out;
+}
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 350; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, 0.6); }
+.modal { width: min(500px, 100%); padding: 16px 24px 24px; border-radius: 12px; background: var(--popup-bg); color: var(--text); box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-head h2 { margin: 0; font-size: 16px; font-weight: 500; }
+.share-row { display: flex; gap: 8px; padding: 6px 6px 6px 12px; border: 1px solid var(--search-border); border-radius: 12px; background: var(--search-bg); }
+.share-url { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--text); font: inherit; font-size: 14px; }
+.share-time { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 14px; }
+
+.icon-btn { position: relative; }
+.badge {
+  position: absolute; top: 2px; right: 0; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  background: #cc0000; color: #fff; font-size: 11px; font-weight: 500; line-height: 16px; text-align: center;
+}
+.notif-popup {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 160; width: min(480px, calc(100vw - 24px));
+  max-height: min(70vh, 640px); overflow-y: auto; border-radius: 12px; background: var(--popup-bg); box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+}
+.notif-head { position: sticky; top: 0; padding: 12px 16px; border-bottom: 1px solid var(--divider); background: var(--popup-bg); font-size: 16px; }
+.notif-empty { padding: 32px 16px; color: var(--text-sub); font-size: 14px; text-align: center; }
+.notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; }
+.notif-item:hover { background: var(--popup-hover); }
+.notif-text { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 20px; }
+.notif-text b { font-weight: 500; }
+.notif-time { color: var(--text-sub); font-size: 12px; }
+.notif-thumb { width: 86px; aspect-ratio: 16 / 9; border-radius: 4px; object-fit: cover; }
+
+/* 썸네일 미리보기 */
+.thumbnail-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* 댓글: 정렬, 답글 */
+.comments-head { display: flex; align-items: center; gap: 32px; margin-bottom: 24px; }
+.comments-head .comments-count { margin: 0; }
+.comments-sort { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.thread { margin-bottom: 16px; }
+.thread-children { margin-left: 56px; }
+.comment-form.small { margin: 8px 0 16px; }
+.comment.small { margin-bottom: 12px; }
+.replies-toggle { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 6px; border-radius: 18px; color: var(--link); font-size: 14px; font-weight: 500; }
+.replies-toggle:hover { background: rgba(62, 166, 255, 0.15); }
+
+/* 추천 영상 필터 칩, 채널 정렬·정보 */
+.related-chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 4px; }
+.related-chips .chip { white-space: nowrap; }
+.related-empty { padding: 24px 0; color: var(--text-sub); font-size: 14px; text-align: center; }
+.channel-tab { background: none; }
+.channel-sort { display: flex; gap: 12px; padding: 16px 0 0; }
+.channel-about { max-width: 760px; padding: 24px 0; font-size: 14px; line-height: 20px; }
+.channel-about h2 { margin: 0 0 12px; font-size: 20px; }
+.channel-about p { margin-bottom: 24px; }
+.channel-about ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.channel-about li { display: flex; align-items: center; gap: 16px; }
+
+/* =========================================================
    하단 내비게이션 (휴대폰만)
    ========================================================= */
 .bottom-nav { display: none; }
@@ -671,6 +736,12 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
   .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; }
   .bottom-nav-item svg { width: 24px; height: 24px; }
   .bottom-nav-item.active { font-weight: 700; }
+
+  .toaster { left: 12px; right: 12px; bottom: calc(60px + env(safe-area-inset-bottom)); }
+  .thread-children { margin-left: 44px; }
+  .channel-sort { padding: 12px 12px 0; }
+  .channel-about { padding: 16px 12px; }
+  .related-chips { padding: 0 0 4px; }
 
   /* 휴대폰 플레이어: 볼륨(기기 버튼 사용)·미니·영화관 버튼은 숨기고 꼭 필요한 것만 */
   .yt-player:not(.is-fullscreen) .volume,

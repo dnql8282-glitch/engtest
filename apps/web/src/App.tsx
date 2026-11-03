@@ -14,6 +14,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { ShortsPage } from './pages/ShortsPage';
 import { YouPage } from './pages/YouPage';
 import { BottomNav } from './components/BottomNav';
+import { Toaster } from './ui/Toaster';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { PlayerController } from './player/PlayerController';
@@ -24,6 +25,7 @@ export default function App() {
   const { theme } = useUserState();
 
   // 테마: 전역 상태의 값을 <html data-theme="..."> 에 반영하면 CSS 변수들이 바뀌어요.
+  // (새로고침 직후 깜빡임은 index.html의 작은 스크립트가 미리 막아 줘요)
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
@@ -68,6 +70,7 @@ export default function App() {
       <MiniPlayer />
       {/* 휴대폰 화면에서만 보이는 하단 메뉴 (CSS로 표시/숨김) */}
       <BottomNav />
+      <Toaster />
     </div>
   );
 }

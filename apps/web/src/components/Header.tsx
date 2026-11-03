@@ -4,6 +4,7 @@ import { Icon } from './Icon';
 import { Logo } from './Logo';
 import { SearchBox } from './SearchBox';
 import { Menu } from './Menu';
+import { NotificationsButton } from './NotificationsButton';
 import { userStore } from '@mytube/core/userStore';
 import { useUserState } from '@mytube/hooks/useUserStore';
 
@@ -53,9 +54,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           <Icon name="add" />
           <span>만들기</span>
         </button>
-        <button className="icon-btn" aria-label="알림">
-          <Icon name="bell" />
-        </button>
+        <NotificationsButton />
         <Menu
           items={[
             {

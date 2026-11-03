@@ -33,6 +33,8 @@ export interface UserState {
   watchLater: string[]; // 나중에 볼 영상 ID (최근에 넣은 것이 앞에)
   theme: Theme;
   playerPrefs: PlayerPrefs;
+  likedComments: string[]; // 내가 좋아요 누른 댓글 id
+  notificationsSeenAt: string | null; // 알림을 마지막으로 열어 본 시각
 }
 
 const MAX_HISTORY = 200;
@@ -47,6 +49,8 @@ const INITIAL: UserState = {
   watchLater: [],
   theme: 'dark',
   playerPrefs: DEFAULT_PLAYER_PREFS,
+  likedComments: [],
+  notificationsSeenAt: null,
 };
 
 let state: UserState = INITIAL;
@@ -70,17 +74,19 @@ export const userStore = {
 
   /** 앱 시작 시 저장된 데이터를 불러와요 */
   async init() {
-    const [subscriptions, ratings, history, watchLater, theme, savedPrefs] = await Promise.all([
+    const [subscriptions, ratings, history, watchLater, theme, savedPrefs, likedComments, notificationsSeenAt] = await Promise.all([
       readJson<string[]>('subscriptions', DEFAULT_SUBSCRIPTIONS),
       readJson<Record<string, Rating>>('ratings', {}),
       readJson<HistoryEntry[]>('history', []),
       readJson<string[]>('watchLater', []),
       readJson<Theme>('theme', 'dark'),
       readJson<Partial<PlayerPrefs>>('playerPrefs', {}),
+      readJson<string[]>('likedComments', []),
+      readJson<string | null>('notificationsSeenAt', null),
     ]);
     // 저장된 값에 빠진 항목이 있어도(예: 새 설정이 추가됨) 기본값으로 채워요
     const playerPrefs = { ...DEFAULT_PLAYER_PREFS, ...savedPrefs };
-    setState({ loaded: true, subscriptions, ratings, history, watchLater, theme, playerPrefs });
+    setState({ loaded: true, subscriptions, ratings, history, watchLater, theme, playerPrefs, likedComments, notificationsSeenAt });
   },
 
   isSubscribed(channelId: string) {
@@ -136,6 +142,20 @@ export const userStore = {
     const playerPrefs = { ...state.playerPrefs, ...patch };
     setState({ playerPrefs });
     void writeJson('playerPrefs', playerPrefs);
+  },
+
+  toggleCommentLike(commentId: string) {
+    const likedComments = state.likedComments.includes(commentId)
+      ? state.likedComments.filter((id) => id !== commentId)
+      : [...state.likedComments, commentId];
+    setState({ likedComments });
+    void writeJson('likedComments', likedComments);
+  },
+
+  markNotificationsSeen(now: Date = new Date()) {
+    const notificationsSeenAt = now.toISOString();
+    setState({ notificationsSeenAt });
+    void writeJson('notificationsSeenAt', notificationsSeenAt);
   },
 
   setTheme(theme: Theme) {
