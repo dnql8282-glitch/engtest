@@ -33,9 +33,9 @@ const youItems: NavItem[] = [
   { icon: 'thumbUp', label: '좋아요 표시한 동영상', to: '/playlist?list=LL' },
 ];
 const exploreItems: NavItem[] = [
-  { icon: 'music', label: '음악', to: '/?category=음악' },
-  { icon: 'game', label: '게임', to: '/?category=게임' },
-  { icon: 'trophy', label: '스포츠', to: '/?category=스포츠' },
+  { icon: 'movie', label: '애니메이션', to: '/?category=애니메이션' },
+  { icon: 'theaters', label: '예고편', to: '/?category=예고편' },
+  { icon: 'eco', label: '자연', to: '/?category=자연' },
 ];
 const miniItems: NavItem[] = [...mainItems, { icon: 'history', label: '나', to: '/feed/history' }];
 

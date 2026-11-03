@@ -81,8 +81,9 @@ docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 
 
 ## 데이터 출처
 
-- 영상: test-videos.co.uk의 오픈 라이선스 샘플 영상 (Big Buck Bunny, Sintel 등)
-- 썸네일: picsum.photos 무료 사진
-- 샘플 영상은 실제로는 10초짜리예요. 카드에 표시되는 재생 시간은 가짜 데이터예요.
+- 영화: Big Buck Bunny, Sintel, Elephants Dream, Tears of Steel, Cosmos Laundromat — © Blender Foundation, CC BY (studio.blender.org/films)
+- 공원 산책 클립: samplelib.com 무료 샘플 · 꽃 타임랩스: MDN 예제 영상(CC0) · 타이머: W3C 미디어 테스트 파일
+- 썸네일: 각 영상의 실제 장면을 캡처했어요 (`apps/web/public/thumbs`)
+- 채널과 조회수, 댓글은 가짜 데이터예요.
 - 아이콘: Google Material Icons (Apache 2.0)
 - 로고와 이름(MyTube)은 YouTube 상표와 구분되도록 따로 만들었어요.

@@ -23,7 +23,7 @@ function allWithChannel(): VideoWithChannel[] {
     .filter((v): v is VideoWithChannel => v !== undefined);
 }
 
-export const categories: Category[] = ['전체', '음악', '게임', '프로그래밍', '요리', '여행', '스포츠'];
+export const categories: Category[] = ['전체', '애니메이션', 'SF', '판타지', '예고편', '브이로그', '자연', '개발'];
 
 export async function getVideos(category: Category = '전체'): Promise<VideoWithChannel[]> {
   await delay(200); // 네트워크 지연 흉내

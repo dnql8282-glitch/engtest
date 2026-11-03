@@ -8,7 +8,7 @@ export interface Channel {
   avatarColor: string; // 프로필 이미지 대신 쓰는 색
 }
 
-export type Category = '전체' | '음악' | '게임' | '프로그래밍' | '요리' | '여행' | '스포츠';
+export type Category = '전체' | '애니메이션' | 'SF' | '판타지' | '예고편' | '브이로그' | '자연' | '개발';
 
 export interface Video {
   id: string;
