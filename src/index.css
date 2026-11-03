@@ -130,8 +130,15 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 /* =========================================================
    본문 영역: 헤더와 가이드만큼 비켜 앉기
    ========================================================= */
-.main { padding-top: var(--header-h); margin-left: var(--guide-w); }
-.app.mini .main { margin-left: var(--mini-guide-w); }
+.main { padding-top: var(--header-h); }
+.guide-full .main { margin-left: var(--guide-w); }
+.guide-mini .main { margin-left: var(--mini-guide-w); }
+
+/* 서랍(drawer) 모드: 왼쪽 밖에 숨어 있다가 열리면 미끄러져 들어와요 */
+.guide.drawer { top: 0; z-index: 300; transform: translateX(-100%); transition: transform 0.2s ease; }
+.guide.drawer.open { transform: none; }
+.drawer-header { display: flex; align-items: center; gap: 16px; height: var(--header-h); padding: 0 16px; }
+.backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0, 0, 0, 0.5); }
 
 /* 카테고리 칩 바 (높이 56px, 헤더 아래 고정) */
 .chips {
@@ -181,6 +188,79 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 }
 .video-card:hover .card-menu { opacity: 1; }
 
+.avatar.large { width: 40px; height: 40px; font-size: 16px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  height: 36px; padding: 0 16px; border-radius: 18px;
+  background: var(--surface); font-size: 14px; font-weight: 500; white-space: nowrap;
+}
+.pill:hover { background: var(--surface-hover); }
+.pill.segmented { padding: 0; gap: 0; }
+.pill.segmented:hover { background: var(--surface); }
+.pill-part { display: inline-flex; align-items: center; gap: 6px; height: 100%; padding: 0 16px; border-radius: 18px; }
+.pill-part:hover { background: var(--surface); }
+.pill-part.active { color: var(--text); }
+.pill-divider { width: 1px; height: 24px; background: var(--divider); }
+
+/* =========================================================
+   시청 페이지
+   ========================================================= */
+.watch { display: flex; gap: 24px; max-width: 1754px; margin: 0 auto; padding: 24px; }
+.watch-primary { flex: 1; min-width: 0; }
+.watch-secondary { display: flex; flex-direction: column; gap: 8px; width: 402px; flex-shrink: 0; }
+.player { aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.player video { width: 100%; height: 100%; display: block; }
+.watch-title { margin: 12px 0 0; font-size: 20px; font-weight: 700; line-height: 28px; }
+.watch-owner-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.owner { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.owner-text { min-width: 0; margin-right: 12px; }
+.owner-name { font-size: 16px; font-weight: 500; line-height: 22px; }
+.owner-subs { color: var(--text-sub); font-size: 12px; line-height: 18px; }
+.subscribe-btn {
+  height: 36px; padding: 0 16px; border-radius: 18px;
+  background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500;
+}
+.subscribe-btn:hover { background: #d9d9d9; }
+.subscribe-btn.subscribed { background: var(--surface); color: var(--text); }
+.subscribe-btn.subscribed:hover { background: var(--surface-hover); }
+.actions { display: flex; gap: 8px; }
+
+.description {
+  margin-top: 12px; padding: 12px; border-radius: 12px;
+  background: var(--surface); font-size: 14px; line-height: 20px; cursor: pointer;
+}
+.description:not(.expanded):hover { background: var(--surface-hover); }
+.description.expanded { cursor: default; }
+.description-meta { font-weight: 500; white-space: pre; }
+.description-tag { margin-left: 8px; color: #3ea6ff; }
+.description-text { white-space: pre-wrap; }
+.description:not(.expanded) .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.description-channel { display: flex; align-items: center; gap: 12px; margin: 24px 0 12px; }
+.description-toggle { display: inline-block; margin-top: 8px; font-weight: 500; }
+
+.compact-card { display: flex; gap: 8px; }
+.compact-thumb { width: 168px; flex-shrink: 0; }
+.compact-thumb .thumbnail { border-radius: 8px; }
+.compact-text { min-width: 0; }
+.compact-title {
+  margin-bottom: 4px; font-size: 14px; font-weight: 500; line-height: 20px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.compact-meta { color: var(--text-sub); font-size: 12px; line-height: 18px; }
+
+.not-found { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 80px 24px; text-align: center; color: var(--text-sub); }
+.not-found h2 { margin: 0; color: var(--text); font-size: 20px; }
+.not-found-emoji { font-size: 64px; }
+.not-found .pill { margin-top: 12px; color: var(--text); }
+
+/* 폭이 좁으면 추천 목록을 영상 아래로 */
+@media (max-width: 1016px) {
+  .watch { flex-direction: column; }
+  .watch-secondary { width: auto; }
+}
+
+.skeleton-block { background: var(--surface); }
 .skeleton-thumb { aspect-ratio: 16 / 9; border-radius: 12px; background: var(--surface); }
 .skeleton-line { height: 20px; margin-top: 12px; border-radius: 4px; background: var(--surface); width: 90%; }
 .skeleton-line.short { width: 60%; }
@@ -189,8 +269,13 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
    좁은 화면 (모바일): 가이드 숨기고 1열
    ========================================================= */
 @media (max-width: 792px) {
-  .guide, .mini-guide { display: none; }
-  .main, .app.mini .main { margin-left: 0; }
+  .guide:not(.drawer), .mini-guide { display: none; }
+  .guide-full .main, .guide-mini .main { margin-left: 0; }
+  .watch { padding: 0 0 16px; }
+  .player { border-radius: 0; }
+  .watch-title, .watch-owner-row, .description, .watch-secondary { margin-left: 12px; margin-right: 12px; }
+  .actions { overflow-x: auto; scrollbar-width: none; }
+  .hide-narrow { display: none; }
   .grid { --cols: 1; padding: 16px 0; }
   .thumbnail { border-radius: 0; }
   .video-details { padding: 0 12px; }

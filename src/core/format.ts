@@ -38,3 +38,14 @@ export function formatRelativeTime(iso: string, now: Date = new Date()): string 
   }
   return '방금 전';
 }
+
+/** 1234567 -> "1,234,567" (시청 페이지 설명란처럼 정확한 숫자를 보여줄 때) */
+export function formatFullCount(n: number): string {
+  return n.toLocaleString('ko-KR');
+}
+
+/** ISO 날짜 -> "2026. 5. 3." */
+export function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`;
+}

@@ -16,18 +16,38 @@ function withChannel(videoId: string): VideoWithChannel | undefined {
   return { ...video, channel };
 }
 
-export async function getVideos(category: Category = '전체'): Promise<VideoWithChannel[]> {
-  await delay(200); // 네트워크 지연 흉내
+function allWithChannel(): VideoWithChannel[] {
   return videos
-    .filter((v) => category === '전체' || v.category === category)
     .map((v) => withChannel(v.id))
     .filter((v): v is VideoWithChannel => v !== undefined);
 }
 
 export const categories: Category[] = ['전체', '음악', '게임', '프로그래밍', '요리', '여행', '스포츠'];
 
-// 사이드바 "구독" 목록 (4단계에서 실제 구독 기능과 연결할 예정)
-export async function getSubscriptions(): Promise<Channel[]> {
+export async function getVideos(category: Category = '전체'): Promise<VideoWithChannel[]> {
+  await delay(200); // 네트워크 지연 흉내
+  return allWithChannel().filter((v) => category === '전체' || v.category === category);
+}
+
+/** 영상 하나. 없으면 null (서버의 404 응답에 해당) */
+export async function getVideo(id: string): Promise<VideoWithChannel | null> {
+  await delay(150);
+  return withChannel(id) ?? null;
+}
+
+/** 추천 영상: 같은 카테고리 → 같은 채널 → 나머지 순서 */
+export async function getRelatedVideos(id: string): Promise<VideoWithChannel[]> {
+  await delay(200);
+  const current = withChannel(id);
+  if (!current) return [];
+  const score = (v: VideoWithChannel) =>
+    (v.category === current.category ? 2 : 0) + (v.channelId === current.channelId ? 1 : 0);
+  return allWithChannel()
+    .filter((v) => v.id !== id)
+    .sort((a, b) => score(b) - score(a) || b.views - a.views);
+}
+
+export async function getChannels(): Promise<Channel[]> {
   await delay(100);
   return channels;
 }

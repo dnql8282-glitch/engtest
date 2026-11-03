@@ -1,95 +1,101 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Channel } from '../../core/types';
-import { getSubscriptions } from '../../core/videoService';
+import { getChannels } from '../../core/videoService';
 import { Icon, type IconName } from './Icon';
+import { Logo } from './Logo';
+
+// full: 펼친 메뉴(240px), mini: 아이콘만(72px), drawer: 평소엔 숨김 + 메뉴 버튼으로 덮어서 열기
+export type SidebarVariant = 'full' | 'mini' | 'drawer';
 
 interface SidebarProps {
-  collapsed: boolean;
+  variant: SidebarVariant;
+  drawerOpen: boolean;
+  onClose: () => void;
+  onToggle: () => void;
 }
 
 interface NavItem {
   icon: IconName;
   label: string;
+  to: string;
 }
 
 const mainItems: NavItem[] = [
-  { icon: 'home', label: '홈' },
-  { icon: 'fire', label: '인기 급상승' },
-  { icon: 'subscriptions', label: '구독' },
+  { icon: 'home', label: '홈', to: '/' },
+  { icon: 'fire', label: '인기 급상승', to: '/' },
+  { icon: 'subscriptions', label: '구독', to: '/' },
 ];
 const youItems: NavItem[] = [
-  { icon: 'history', label: '시청 기록' },
-  { icon: 'playlist', label: '재생목록' },
-  { icon: 'clock', label: '나중에 볼 동영상' },
-  { icon: 'thumbUp', label: '좋아요 표시한 동영상' },
+  { icon: 'history', label: '시청 기록', to: '/' },
+  { icon: 'playlist', label: '재생목록', to: '/' },
+  { icon: 'clock', label: '나중에 볼 동영상', to: '/' },
+  { icon: 'thumbUp', label: '좋아요 표시한 동영상', to: '/' },
 ];
 const exploreItems: NavItem[] = [
-  { icon: 'music', label: '음악' },
-  { icon: 'game', label: '게임' },
-  { icon: 'trophy', label: '스포츠' },
+  { icon: 'music', label: '음악', to: '/' },
+  { icon: 'game', label: '게임', to: '/' },
+  { icon: 'trophy', label: '스포츠', to: '/' },
 ];
 
-function NavLink({ item, active = false }: { item: NavItem; active?: boolean }) {
-  return (
-    <a href="#" className={`guide-item ${active ? 'active' : ''}`}>
-      <Icon name={item.icon} />
-      <span className="guide-label">{item.label}</span>
-    </a>
-  );
-}
-
-// 왼쪽 가이드 메뉴. 펼침(240px) / 미니(72px) 두 가지 모양이 있어요.
-export function Sidebar({ collapsed }: SidebarProps) {
+export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps) {
   const [subs, setSubs] = useState<Channel[]>([]);
   useEffect(() => {
-    getSubscriptions().then(setSubs);
+    getChannels().then(setSubs);
   }, []);
 
-  if (collapsed) {
+  if (variant === 'mini') {
     return (
       <nav className="mini-guide">
-        {[...mainItems, { icon: 'history', label: '나' } as NavItem].map((item, i) => (
-          <a key={item.label} href="#" className={`mini-item ${i === 0 ? 'active' : ''}`}>
+        {[...mainItems, { icon: 'history', label: '나', to: '/' } as NavItem].map((item, i) => (
+          <Link key={item.label} to={item.to} className={`mini-item ${i === 0 ? 'active' : ''}`}>
             <Icon name={item.icon} />
             <span>{item.label}</span>
-          </a>
+          </Link>
         ))}
       </nav>
     );
   }
 
-  return (
-    <nav className="guide">
-      <section className="guide-section">
-        {mainItems.map((item, i) => (
-          <NavLink key={item.label} item={item} active={i === 0} />
-        ))}
-      </section>
+  const link = (item: NavItem, active = false) => (
+    <Link key={item.label} to={item.to} className={`guide-item ${active ? 'active' : ''}`} onClick={onClose}>
+      <Icon name={item.icon} />
+      <span className="guide-label">{item.label}</span>
+    </Link>
+  );
+
+  const guide = (
+    <nav className={`guide ${variant === 'drawer' ? 'drawer' : ''} ${drawerOpen ? 'open' : ''}`}>
+      {variant === 'drawer' && (
+        <div className="drawer-header">
+          <button className="icon-btn" aria-label="메뉴" onClick={onToggle}>
+            <Icon name="menu" />
+          </button>
+          <Logo />
+        </div>
+      )}
+      <section className="guide-section">{mainItems.map((item, i) => link(item, i === 0))}</section>
 
       <section className="guide-section">
-        <a href="#" className="guide-title">
+        <Link to="/" className="guide-title" onClick={onClose}>
           나 <Icon name="chevronRight" size={20} />
-        </a>
-        {youItems.map((item) => (
-          <NavLink key={item.label} item={item} />
-        ))}
+        </Link>
+        {youItems.map((item) => link(item))}
       </section>
 
       <section className="guide-section">
         <h3 className="guide-title">구독</h3>
         {subs.map((c) => (
-          <a key={c.id} href="#" className="guide-item">
+          <Link key={c.id} to="/" className="guide-item" onClick={onClose}>
             <span className="avatar tiny" style={{ background: c.avatarColor }}>{c.name[0]}</span>
             <span className="guide-label">{c.name}</span>
-          </a>
+          </Link>
         ))}
       </section>
 
       <section className="guide-section">
         <h3 className="guide-title">탐색</h3>
-        {exploreItems.map((item) => (
-          <NavLink key={item.label} item={item} />
-        ))}
+        {exploreItems.map((item) => link(item))}
       </section>
 
       <footer className="guide-footer">
@@ -98,4 +104,14 @@ export function Sidebar({ collapsed }: SidebarProps) {
       </footer>
     </nav>
   );
+
+  if (variant === 'drawer') {
+    return (
+      <>
+        {drawerOpen && <div className="backdrop" onClick={onClose} />}
+        {guide}
+      </>
+    );
+  }
+  return guide;
 }
