@@ -39,7 +39,13 @@ export function HomePage() {
       </div>
       <div className="grid">
         {loading
-          ? Array.from({ length: 8 }, (_, i) => <div key={i} className="skeleton" />)
+          ? Array.from({ length: 9 }, (_, i) => (
+              <div key={i}>
+                <div className="skeleton-thumb" />
+                <div className="skeleton-line" />
+                <div className="skeleton-line short" />
+              </div>
+            ))
           : videos.map((v) => <VideoCard key={v.id} video={v} />)}
       </div>
     </div>

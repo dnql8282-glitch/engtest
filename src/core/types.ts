@@ -20,7 +20,8 @@ export interface Video {
   likes: number;
   durationSec: number;
   uploadedAt: string; // ISO 날짜 문자열
-  thumbnailColors: [string, string]; // 썸네일 그라데이션 색
+  thumbnailUrl: string;
+  thumbnailColors: [string, string]; // 썸네일 이미지가 뜨기 전에 보여줄 배경색
   videoUrl: string;
 }
 

@@ -35,6 +35,7 @@ src/
 ## 개발 로드맵
 
 - [x] **1단계**: 레이아웃(헤더·사이드바), 홈 영상 그리드, 카테고리 필터
+- [x] **1.5단계**: YouTube 다크 모드 디자인 (레이아웃·색·크기 맞춤, Material 아이콘, 반응형)
 - [ ] **2단계**: 영상 시청 페이지 (라우팅, 비디오 플레이어, 추천 영상 목록)
 - [ ] **3단계**: 검색 기능
 - [ ] **4단계**: 좋아요, 댓글, 구독 (localStorage에 저장)
@@ -42,4 +43,7 @@ src/
 
 ## 데이터 출처
 
-영상은 Google이 공개한 오픈 라이선스 샘플 영상(Big Buck Bunny, Sintel 등)을 사용해요. 썸네일은 이미지 파일 대신 CSS 그라데이션으로 만들어요.
+- 영상: test-videos.co.uk의 오픈 라이선스 샘플 영상 (Big Buck Bunny, Sintel 등)
+- 썸네일: picsum.photos 무료 사진
+- 아이콘: Google Material Icons (Apache 2.0)
+- 로고와 이름(MyTube)은 YouTube 상표와 구분되도록 따로 만들었어요.

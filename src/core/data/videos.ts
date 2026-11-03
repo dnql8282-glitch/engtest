@@ -3,12 +3,19 @@ import type { Video } from '../types';
 // 업로드 날짜를 "지금으로부터 며칠 전"으로 계산해서 항상 최근 영상처럼 보이게 해요.
 const daysAgo = (d: number, h = 0) => new Date(Date.now() - (d * 24 + h) * 3600_000).toISOString();
 
-// 영상 파일은 Google이 공개한 샘플 영상(오픈 라이선스)을 사용해요.
-const SAMPLE = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
+// 영상: test-videos.co.uk의 오픈 라이선스 샘플 영상(Blender 재단 작품 등)
+const CLIPS = [
+  'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4',
+  'https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_5MB.mp4',
+  'https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_5MB.mp4',
+];
+// 썸네일: picsum.photos의 무료 사진 (seed가 같으면 항상 같은 사진)
+const thumb = (seed: string) => `https://picsum.photos/seed/mytube-${seed}/640/360`;
 
 export const videos: Video[] = [
   {
     id: 'v1',
+    thumbnailUrl: thumb('v1'),
     title: 'TypeScript 30분 만에 끝내기',
     description: '타입스크립트 기초 문법을 빠르게 정리합니다.',
     channelId: 'c1',
@@ -18,10 +25,11 @@ export const videos: Video[] = [
     durationSec: 3423,
     uploadedAt: daysAgo(165, 4),
     thumbnailColors: ['#0ea5e9', '#6366f1'],
-    videoUrl: SAMPLE + 'BigBuckBunny.mp4',
+    videoUrl: CLIPS[0],
   },
   {
     id: 'v2',
+    thumbnailUrl: thumb('v2'),
     title: 'React 상태 관리, 이것만 알면 됩니다',
     description: 'useState부터 Context까지 한 번에.',
     channelId: 'c1',
@@ -31,10 +39,11 @@ export const videos: Video[] = [
     durationSec: 213,
     uploadedAt: daysAgo(48, 11),
     thumbnailColors: ['#f43f5e', '#f59e0b'],
-    videoUrl: SAMPLE + 'ElephantsDream.mp4',
+    videoUrl: CLIPS[1],
   },
   {
     id: 'v3',
+    thumbnailUrl: thumb('v3'),
     title: '개발자 책상 투어 2026',
     description: '제가 매일 쓰는 장비를 소개합니다.',
     channelId: 'c1',
@@ -44,10 +53,11 @@ export const videos: Video[] = [
     durationSec: 1798,
     uploadedAt: daysAgo(222, 13),
     thumbnailColors: ['#10b981', '#06b6d4'],
-    videoUrl: SAMPLE + 'ForBiggerBlazes.mp4',
+    videoUrl: CLIPS[2],
   },
   {
     id: 'v4',
+    thumbnailUrl: thumb('v4'),
     title: '10분 김치볶음밥 황금 레시피',
     description: '자취생도 실패 없는 레시피!',
     channelId: 'c2',
@@ -57,10 +67,11 @@ export const videos: Video[] = [
     durationSec: 313,
     uploadedAt: daysAgo(289, 3),
     thumbnailColors: ['#8b5cf6', '#ec4899'],
-    videoUrl: SAMPLE + 'ForBiggerEscapes.mp4',
+    videoUrl: CLIPS[0],
   },
   {
     id: 'v5',
+    thumbnailUrl: thumb('v5'),
     title: '에어프라이어로 통삼겹 굽기',
     description: '겉바속촉의 정석.',
     channelId: 'c2',
@@ -70,10 +81,11 @@ export const videos: Video[] = [
     durationSec: 3576,
     uploadedAt: daysAgo(299, 12),
     thumbnailColors: ['#f97316', '#ef4444'],
-    videoUrl: SAMPLE + 'ForBiggerFun.mp4',
+    videoUrl: CLIPS[1],
   },
   {
     id: 'v6',
+    thumbnailUrl: thumb('v6'),
     title: '일주일 도시락 밀프렙',
     description: '한 번에 만들어 두고 편하게 먹기.',
     channelId: 'c2',
@@ -83,10 +95,11 @@ export const videos: Video[] = [
     durationSec: 1323,
     uploadedAt: daysAgo(148, 13),
     thumbnailColors: ['#14b8a6', '#84cc16'],
-    videoUrl: SAMPLE + 'ForBiggerJoyrides.mp4',
+    videoUrl: CLIPS[2],
   },
   {
     id: 'v7',
+    thumbnailUrl: thumb('v7'),
     title: '제주도 3박 4일 뚜벅이 여행',
     description: '차 없이도 충분해요.',
     channelId: 'c3',
@@ -96,10 +109,11 @@ export const videos: Video[] = [
     durationSec: 829,
     uploadedAt: daysAgo(349, 5),
     thumbnailColors: ['#64748b', '#0f172a'],
-    videoUrl: SAMPLE + 'ForBiggerMeltdowns.mp4',
+    videoUrl: CLIPS[0],
   },
   {
     id: 'v8',
+    thumbnailUrl: thumb('v8'),
     title: '혼자 떠난 교토 브이로그',
     description: '가을 단풍이 가득한 교토.',
     channelId: 'c3',
@@ -109,10 +123,11 @@ export const videos: Video[] = [
     durationSec: 903,
     uploadedAt: daysAgo(49, 17),
     thumbnailColors: ['#e11d48', '#7c3aed'],
-    videoUrl: SAMPLE + 'Sintel.mp4',
+    videoUrl: CLIPS[1],
   },
   {
     id: 'v9',
+    thumbnailUrl: thumb('v9'),
     title: '신작 인디게임 첫 플레이',
     description: '이 게임 생각보다 어렵네요...',
     channelId: 'c4',
@@ -122,10 +137,11 @@ export const videos: Video[] = [
     durationSec: 2458,
     uploadedAt: daysAgo(348, 17),
     thumbnailColors: ['#0ea5e9', '#6366f1'],
-    videoUrl: SAMPLE + 'SubaruOutbackOnStreetAndDirt.mp4',
+    videoUrl: CLIPS[2],
   },
   {
     id: 'v10',
+    thumbnailUrl: thumb('v10'),
     title: '랭크 100판 도전 1일차',
     description: '과연 목표 달성할 수 있을까?',
     channelId: 'c4',
@@ -135,10 +151,11 @@ export const videos: Video[] = [
     durationSec: 3254,
     uploadedAt: daysAgo(185, 9),
     thumbnailColors: ['#f43f5e', '#f59e0b'],
-    videoUrl: SAMPLE + 'TearsOfSteel.mp4',
+    videoUrl: CLIPS[0],
   },
   {
     id: 'v11',
+    thumbnailUrl: thumb('v11'),
     title: '보스전 노데미지 클리어',
     description: '드디어 성공했습니다.',
     channelId: 'c4',
@@ -148,10 +165,11 @@ export const videos: Video[] = [
     durationSec: 3047,
     uploadedAt: daysAgo(41, 18),
     thumbnailColors: ['#10b981', '#06b6d4'],
-    videoUrl: SAMPLE + 'VolkswagenGTIReview.mp4',
+    videoUrl: CLIPS[1],
   },
   {
     id: 'v12',
+    thumbnailUrl: thumb('v12'),
     title: '공부할 때 듣는 로파이 1시간',
     description: '집중력을 높여주는 음악.',
     channelId: 'c5',
@@ -161,10 +179,11 @@ export const videos: Video[] = [
     durationSec: 735,
     uploadedAt: daysAgo(147, 19),
     thumbnailColors: ['#8b5cf6', '#ec4899'],
-    videoUrl: SAMPLE + 'WeAreGoingOnBullrun.mp4',
+    videoUrl: CLIPS[2],
   },
   {
     id: 'v13',
+    thumbnailUrl: thumb('v13'),
     title: '비 오는 날 재즈 플레이리스트',
     description: '잔잔한 재즈와 빗소리.',
     channelId: 'c5',
@@ -174,10 +193,11 @@ export const videos: Video[] = [
     durationSec: 3191,
     uploadedAt: daysAgo(77, 15),
     thumbnailColors: ['#f97316', '#ef4444'],
-    videoUrl: SAMPLE + 'WhatCarCanYouGetForAGrand.mp4',
+    videoUrl: CLIPS[0],
   },
   {
     id: 'v14',
+    thumbnailUrl: thumb('v14'),
     title: '이번 주 축구 명장면 TOP 10',
     description: '놓치면 아쉬운 장면들.',
     channelId: 'c6',
@@ -187,10 +207,11 @@ export const videos: Video[] = [
     durationSec: 2094,
     uploadedAt: daysAgo(293, 10),
     thumbnailColors: ['#14b8a6', '#84cc16'],
-    videoUrl: SAMPLE + 'BigBuckBunny.mp4',
+    videoUrl: CLIPS[1],
   },
   {
     id: 'v15',
+    thumbnailUrl: thumb('v15'),
     title: '마라톤 완주 후기',
     description: '첫 풀코스 도전기.',
     channelId: 'c6',
@@ -200,10 +221,11 @@ export const videos: Video[] = [
     durationSec: 2780,
     uploadedAt: daysAgo(233, 2),
     thumbnailColors: ['#64748b', '#0f172a'],
-    videoUrl: SAMPLE + 'ElephantsDream.mp4',
+    videoUrl: CLIPS[2],
   },
   {
     id: 'v16',
+    thumbnailUrl: thumb('v16'),
     title: 'Git 브랜치 전략 쉽게 이해하기',
     description: '협업할 때 꼭 필요한 Git.',
     channelId: 'c1',
@@ -213,6 +235,6 @@ export const videos: Video[] = [
     durationSec: 3426,
     uploadedAt: daysAgo(31, 23),
     thumbnailColors: ['#e11d48', '#7c3aed'],
-    videoUrl: SAMPLE + 'ForBiggerBlazes.mp4',
+    videoUrl: CLIPS[0],
   },
 ];

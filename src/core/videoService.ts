@@ -1,4 +1,4 @@
-import type { Category, VideoWithChannel } from './types';
+import type { Category, Channel, VideoWithChannel } from './types';
 import { videos } from './data/videos';
 import { channels } from './data/channels';
 
@@ -25,3 +25,9 @@ export async function getVideos(category: Category = '전체'): Promise<VideoWit
 }
 
 export const categories: Category[] = ['전체', '음악', '게임', '프로그래밍', '요리', '여행', '스포츠'];
+
+// 사이드바 "구독" 목록 (4단계에서 실제 구독 기능과 연결할 예정)
+export async function getSubscriptions(): Promise<Channel[]> {
+  await delay(100);
+  return channels;
+}
