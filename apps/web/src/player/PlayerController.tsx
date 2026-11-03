@@ -7,6 +7,7 @@ import { useAsync } from '@mytube/hooks/useAsync';
 import { usePlayerState } from '@mytube/hooks/usePlayerState';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { controls, video } from './playback';
+import { loadVideo, unloadVideo } from './streaming';
 
 // 화면 없이 "재생 엔진"만 담당하는 컴포넌트 (App에 한 번만 둠)
 //  - playerStore의 videoId가 바뀌면 영상 소스를 바꾸고 재생
@@ -36,10 +37,13 @@ export function PlayerController() {
     if (!current) return;
     if (video.dataset.videoId !== current.id) {
       video.dataset.videoId = current.id;
-      video.src = current.videoUrl;
       video.poster = current.thumbnailUrl;
-      void video.play().catch(() => {
-        /* 사용자가 아직 페이지를 누른 적이 없으면 브라우저가 소리 있는 자동재생을 막아요 */
+      // 스트리밍(화질·코덱 자동 선택) 또는 MP4 파일로 불러온 뒤 재생
+      void loadVideo(current).then(() => {
+        if (video.dataset.videoId !== current.id) return;
+        void video.play().catch(() => {
+          /* 사용자가 아직 페이지를 누른 적이 없으면 브라우저가 소리 있는 자동재생을 막아요 */
+        });
       });
       userStore.recordWatch(current.id);
     }
@@ -57,10 +61,9 @@ export function PlayerController() {
   useEffect(() => {
     if (videoId) return;
     video.pause();
-    video.removeAttribute('src');
     video.removeAttribute('poster');
     delete video.dataset.videoId;
-    video.load();
+    void unloadVideo();
     if ('mediaSession' in navigator) navigator.mediaSession.metadata = null;
   }, [videoId]);
 

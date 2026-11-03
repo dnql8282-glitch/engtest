@@ -1,6 +1,7 @@
 import { Image, Text, View, type ViewStyle } from 'react-native';
 import type { Video } from '@mytube/core/types';
 import { formatDuration } from '@mytube/core/format';
+import { mediaUrl } from '@mytube/core/media';
 
 export function Thumbnail({ video, radius = 0, style }: { video: Video; radius?: number; style?: ViewStyle }) {
   return (
@@ -10,7 +11,7 @@ export function Thumbnail({ video, radius = 0, style }: { video: Video; radius?:
         style,
       ]}
     >
-      <Image source={{ uri: video.thumbnailUrl }} style={{ width: '100%', height: '100%' }} />
+      <Image source={{ uri: mediaUrl(video.thumbnailUrl) }} style={{ width: '100%', height: '100%' }} />
       <View
         style={{
           position: 'absolute',

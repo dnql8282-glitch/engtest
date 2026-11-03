@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { getVideo } from '@mytube/core/videoService';
+import type { VideoWithChannel } from '@mytube/core/types';
 import { playerStore } from '@mytube/core/playerStore';
 import { userStore } from '@mytube/core/userStore';
 import { useAsync } from '@mytube/hooks/useAsync';
@@ -23,6 +24,7 @@ import { layout } from '../theme/tokens';
 import { Icon } from '../components/Icon';
 import { PlayerControls } from './PlayerControls';
 import { WatchDetails } from './WatchDetails';
+import { mediaUrl } from '@mytube/core/media';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 앱 전체에 딱 하나 있는 플레이어.
@@ -37,6 +39,16 @@ import { WatchDetails } from './WatchDetails';
 //   <VideoView allowsPictureInPicture startsPictureInPictureAutomatically>
 //                                              → 홈으로 나가면 자동으로 PiP 창
 // ─────────────────────────────────────────────────────────────────────────────
+
+// 플랫폼별로 가장 좋은 스트리밍 형식 고르기 (웹 W6와 같은 인코딩 결과를 사용)
+//  안드로이드(ExoPlayer): DASH — 기기가 지원하면 AV1 + Opus, 아니면 H.264 + AAC를 플레이어가 자동 선택
+//  iPhone(AVPlayer):      HLS  — H.264 + AAC (애플 기기 표준)
+//  웹 미리보기 / 스트리밍 버전 없음: MP4 파일
+function sourceFor(v: VideoWithChannel): { uri: string; contentType?: 'dash' | 'hls' | 'progressive' } {
+  if (v.stream && Platform.OS === 'android') return { uri: mediaUrl(v.stream.dash), contentType: 'dash' };
+  if (v.stream && Platform.OS === 'ios') return { uri: mediaUrl(v.stream.hls), contentType: 'hls' };
+  return { uri: mediaUrl(v.videoUrl), contentType: 'progressive' };
+}
 
 const MINI_H = layout.miniPlayerHeight;
 const MINI_W = Math.round((MINI_H * 16) / 9);
@@ -64,8 +76,8 @@ export function PlayerOverlay() {
     // metadata는 잠금 화면/제어 센터의 "지금 재생 중"에 표시돼요.
     void player
       .replaceAsync({
-        uri: video.videoUrl,
-        metadata: { title: video.title, artist: video.channel.name, artwork: video.thumbnailUrl },
+        ...sourceFor(video),
+        metadata: { title: video.title, artist: video.channel.name, artwork: mediaUrl(video.thumbnailUrl) },
       })
       .then(() => player.play());
     userStore.recordWatch(video.id);

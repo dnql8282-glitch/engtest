@@ -22,7 +22,13 @@ export interface Video {
   uploadedAt: string; // ISO 날짜 문자열
   thumbnailUrl: string;
   thumbnailColors: [string, string]; // 썸네일 이미지가 뜨기 전에 보여줄 배경색
-  videoUrl: string;
+  videoUrl: string; // 단일 MP4 파일 (스트리밍 버전이 없거나 재생할 수 없을 때 사용)
+  /**
+   * 적응형 스트리밍(YouTube 방식): 화질 여러 개 + 코덱 여러 개를 4초 조각으로 나눈 것
+   *  dash: 웹용 목록 (AV1/H.264 + Opus/AAC)   hls: iPhone/Safari·앱용 목록 (H.264 + AAC)
+   *  `npm run encode` 로 만들어요 (tools/encode/encode.mjs)
+   */
+  stream?: { dash: string; hls: string };
 }
 
 // 화면에서 쓰기 편하도록 영상에 채널 정보를 붙인 형태

@@ -10,6 +10,8 @@
     "build:web": "npm run build -w @mytube/web",
     "dev:mobile": "npm run start -w @mytube/mobile",
     "test": "npm test -w @mytube/core",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "encode": "node tools/encode/encode.mjs",
+    "dev:web:lan": "npm run dev -w @mytube/web -- --host"
   }
 }

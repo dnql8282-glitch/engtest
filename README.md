@@ -15,6 +15,7 @@ YouTube처럼 동작하는 영상 앱을 **서버 없이** 만들어 보는 학�
 npm install          # 저장소 루트에서 한 번
 npm run dev:web      # 웹 앱: http://localhost:5173
 npm test             # core 로직 자동 테스트
+npm run encode       # (선택) 스트리밍용 영상 다시 만들기 — ffmpeg 필요
 ```
 
 모바일 앱(아이폰·안드로이드) 실행 방법은 [apps/mobile/README.md](apps/mobile/README.md)에 있어요.
@@ -37,6 +38,8 @@ packages/
 apps/
   web/       웹 앱 (React DOM + CSS)
   mobile/    iOS·안드로이드 앱 (React Native + Expo)
+tools/
+  encode/    YouTube 방식 인코딩 파이프라인 (ffmpeg: AV1·H.264 화질 사다리, Opus·AAC 48kHz, DASH+HLS)
 docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 스크린샷
 ```
 
@@ -65,7 +68,7 @@ docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 
 - [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
 - [x] **5단계**: 시청 기록, 좋아요/나중에 볼 재생목록, 구독 피드, 인기 급상승, 채널 페이지, 테마 전환
 - [x] **6단계**: iOS·안드로이드 앱 (YouTube iOS 앱 UI, 미니 플레이어, PiP, 백그라운드·잠금 화면 재생) — ⏸ 보류 중
-- [x] **웹 다듬기 W1~W5**: 실제 영상, YouTube 스타일 플레이어·단축키, 웹 미니 플레이어, 모바일 레이아웃, Shorts, 공유·알림·답글 등
+- [x] **웹 다듬기 W1~W6**: 실제 영상, YouTube 스타일 플레이어·단축키, 웹 미니 플레이어, 모바일 레이아웃, Shorts, 공유·알림·답글, 적응형 스트리밍(AV1/H.264, Opus/AAC 48kHz, 화질 선택)
 
 ## 주요 화면과 주소
 

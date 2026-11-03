@@ -5,6 +5,8 @@ const daysAgo = (d: number, h = 0) => new Date(Date.now() - (d * 24 + h) * 3600_
 
 // 썸네일: 각 영상의 실제 장면을 캡처한 이미지 (apps/web/public/thumbs)
 const thumb = (id: string) => `/thumbs/${id}.jpg`;
+// 적응형 스트리밍 버전 (apps/web/public/media/<id>) — tools/encode/encode.mjs 로 생성
+const stream = (id: string) => ({ dash: `/media/${id}/manifest.mpd`, hls: `/media/${id}/hls.m3u8` });
 
 // 영상 출처와 라이선스
 //  - Big Buck Bunny, Sintel, Elephants Dream, Tears of Steel, Cosmos Laundromat:
@@ -42,6 +44,7 @@ export const videos: Video[] = [
     thumbnailUrl: thumb('v2'),
     thumbnailColors: ['#a7c86a', '#f2c6c2'],
     videoUrl: 'https://media.w3.org/2010/05/bunny/trailer.mp4',
+    stream: stream('v2'),
   },
   {
     id: 'v3',
@@ -71,6 +74,7 @@ export const videos: Video[] = [
     thumbnailUrl: thumb('v4'),
     thumbnailColors: ['#b07040', '#e0b080'],
     videoUrl: 'https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4',
+    stream: stream('v4'),
   },
   {
     id: 'v5',
@@ -172,6 +176,7 @@ export const videos: Video[] = [
     thumbnailUrl: thumb('v11'),
     thumbnailColors: ['#5a3a3a', '#c06060'],
     videoUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+    stream: stream('v11'),
   },
   {
     id: 'v12',
@@ -187,5 +192,6 @@ export const videos: Video[] = [
     thumbnailUrl: thumb('v12'),
     thumbnailColors: ['#ffffff', '#e5e5e5'],
     videoUrl: 'https://media.w3.org/2010/05/video/movie_300.mp4',
+    stream: stream('v12'),
   },
 ];

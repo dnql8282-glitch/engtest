@@ -11,11 +11,12 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@mytube/core": "*",
+    "@mytube/hooks": "*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "^7.18.5",
-    "@mytube/core": "*",
-    "@mytube/hooks": "*"
+    "shaka-player": "^5.3.3"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

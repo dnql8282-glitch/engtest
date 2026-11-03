@@ -61,3 +61,15 @@ describe('채널 영상 정렬', () => {
     expect(sortChannelVideos(list, 'oldest').map((x) => x.id)).toEqual(['b', 'a', 'c']);
   });
 });
+
+import { mediaUrl, setMediaBase } from './media';
+
+describe('미디어 주소', () => {
+  it('기본은 그대로, 기준 주소를 정하면 앞에 붙이고, 전체 주소는 건드리지 않는다', () => {
+    expect(mediaUrl('/thumbs/v1.jpg')).toBe('/thumbs/v1.jpg');
+    setMediaBase('http://192.168.0.10:5173/');
+    expect(mediaUrl('/thumbs/v1.jpg')).toBe('http://192.168.0.10:5173/thumbs/v1.jpg');
+    expect(mediaUrl('https://example.com/a.mp4')).toBe('https://example.com/a.mp4');
+    setMediaBase('');
+  });
+});

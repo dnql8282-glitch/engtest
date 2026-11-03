@@ -4,6 +4,7 @@ import { useEvent } from 'expo';
 import type { VideoPlayer } from 'expo-video';
 import { formatDuration } from '@mytube/core/format';
 import { Icon } from '../components/Icon';
+import { PlayerSettings } from './PlayerSettings';
 
 // YouTube 앱 스타일 자체 컨트롤 (기본 iOS 컨트롤 대신)
 // 영상을 한 번 누르면 컨트롤이 나타나고, 3초 뒤 저절로 사라져요.
@@ -21,6 +22,7 @@ export function PlayerControls({
   onFullscreen: () => void;
 }) {
   const [visible, setVisible] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [barWidth, setBarWidth] = useState(1);
   const { currentTime } = useEvent(player, 'timeUpdate', { currentTime: player.currentTime, currentLiveTimestamp: null, currentOffsetFromLive: null, bufferedPosition: 0 });
   const duration = player.duration || 0;
@@ -43,7 +45,10 @@ export function PlayerControls({
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 4 }}>
             <CtrlButton icon="keyboard-arrow-down" label="최소화" onPress={onMinimize} size={30} />
-            <CtrlButton icon="picture-in-picture-alt" label="PIP 모드" onPress={onPictureInPicture} />
+            <View style={{ flexDirection: 'row' }}>
+              <CtrlButton icon="picture-in-picture-alt" label="PIP 모드" onPress={onPictureInPicture} />
+              <CtrlButton icon="settings" label="설정" onPress={() => setSettingsOpen(true)} />
+            </View>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 40 }}>
@@ -66,6 +71,13 @@ export function PlayerControls({
           </View>
         </View>
       )}
+
+      <PlayerSettings
+        player={player}
+        visible={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onPictureInPicture={onPictureInPicture}
+      />
 
       {/* 빨간 진행 막대: 누른 위치로 이동 */}
       <Pressable

@@ -4,10 +4,11 @@ import { useTheme } from '../theme/useTheme';
 import { Icon, type IconName } from './Icon';
 
 export interface SheetItem {
-  icon: IconName;
+  icon: IconName | 'blank';
   label: string;
   onPress: () => void;
   danger?: boolean;
+  keepOpen?: boolean; // 누른 뒤에도 시트를 닫지 않음 (하위 메뉴로 이동할 때)
 }
 
 // iOS 앱의 바텀시트 메뉴 (⋮ 를 누르면 아래에서 올라오는 목록)
@@ -31,7 +32,7 @@ export function Sheet({ visible, onClose, items }: { visible: boolean; onClose: 
           <Pressable
             key={item.label}
             onPress={() => {
-              onClose();
+              if (!item.keepOpen) onClose();
               item.onPress();
             }}
             style={({ pressed }) => ({
@@ -43,7 +44,7 @@ export function Sheet({ visible, onClose, items }: { visible: boolean; onClose: 
               backgroundColor: pressed ? t.surface : 'transparent',
             })}
           >
-            <Icon name={item.icon} color={item.danger ? t.danger : t.text} />
+            {item.icon === 'blank' ? <View style={{ width: 24 }} /> : <Icon name={item.icon} color={item.danger ? t.danger : t.text} />}
             <Text style={{ color: item.danger ? t.danger : t.text, fontSize: 15 }}>{item.label}</Text>
           </Pressable>
         ))}

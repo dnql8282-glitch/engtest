@@ -11,6 +11,7 @@ import { VideoRow } from '../../components/VideoRow';
 import { Icon } from '../../components/Icon';
 import { EmptyState } from '../../components/EmptyState';
 import { Screen, useBottomSpace } from '../../components/Screen';
+import { mediaUrl } from '@mytube/core/media';
 
 // 재생목록: /playlist/LL (좋아요) · /playlist/WL (나중에 볼) — 웹 PlaylistPage와 같은 로직
 const META = {
@@ -37,12 +38,12 @@ export default function PlaylistScreen() {
         contentContainerStyle={{ paddingBottom: bottom }}
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top, backgroundColor: '#2a2a2a', marginBottom: 8 }}>
-            {cover && <Image source={{ uri: cover.thumbnailUrl }} blurRadius={30} style={{ position: 'absolute', inset: 0, opacity: 0.6 }} />}
+            {cover && <Image source={{ uri: mediaUrl(cover.thumbnailUrl) }} blurRadius={30} style={{ position: 'absolute', inset: 0, opacity: 0.6 }} />}
             <View style={{ flexDirection: 'row', paddingHorizontal: 4 }}>
               <IconButton name="arrow-back" color="#fff" onPress={() => router.back()} label="뒤로" />
             </View>
             <View style={{ padding: 16, gap: 8 }}>
-              {cover && <Image source={{ uri: cover.thumbnailUrl }} style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 12 }} />}
+              {cover && <Image source={{ uri: mediaUrl(cover.thumbnailUrl) }} style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 12 }} />}
               <Text style={{ color: '#fff', fontSize: 24, fontWeight: '700', marginTop: 8 }}>{META[key].title}</Text>
               <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>나 · 동영상 {ids.length}개 · 비공개</Text>
               {videos.length > 0 && (

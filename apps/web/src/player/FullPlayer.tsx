@@ -8,6 +8,8 @@ import { controls, usePlayback, video } from './playback';
 import { PlayerSlot } from './PlayerSlot';
 import { ProgressBar } from './ProgressBar';
 import { SettingsMenu } from './SettingsMenu';
+import { StatsForNerds } from './StatsForNerds';
+import { useStreamState } from './streaming';
 import { PIcon, type PlayerIconName } from './icons';
 
 interface FullPlayerProps {
@@ -23,6 +25,8 @@ export function FullPlayer({ next, onNext }: FullPlayerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true); // 컨트롤 보이기
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const stream = useStreamState();
   const [fullscreen, setFullscreen] = useState(false);
   const [bubble, setBubble] = useState<{ icon: PlayerIconName; text?: string; side?: 'left' | 'right'; key: number } | null>(null);
   const [countdownCancelled, setCountdownCancelled] = useState(false);
@@ -128,6 +132,10 @@ export function FullPlayer({ next, onNext }: FullPlayerProps) {
       className={`yt-player ${showControls ? 'controls-on' : 'controls-off'} ${fullscreen ? 'is-fullscreen' : ''}`}
       onMouseMove={poke}
       onMouseLeave={() => pb.playing && setActive(false)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setStatsOpen((o) => !o);
+      }}
     >
       <PlayerSlot className="player-slot" />
 
@@ -146,6 +154,7 @@ export function FullPlayer({ next, onNext }: FullPlayerProps) {
       />
 
       {pb.waiting && pb.playing && <div className="player-spinner" aria-label="로딩 중" />}
+      {statsOpen && <StatsForNerds onClose={() => setStatsOpen(false)} />}
 
       {bubble && (
         <div key={bubble.key} className={`player-bubble ${bubble.side ?? 'center'}`}>
@@ -218,8 +227,9 @@ export function FullPlayer({ next, onNext }: FullPlayerProps) {
                 <span className={`gear ${settingsOpen ? 'open' : ''}`}>
                   <PIcon name="settings" />
                 </span>
+                {stream.activeHeight !== null && stream.activeHeight >= 720 && <span className="hd-badge">HD</span>}
               </CtrlButton>
-              {settingsOpen && <SettingsMenu onClose={() => setSettingsOpen(false)} />}
+              {settingsOpen && <SettingsMenu onClose={() => setSettingsOpen(false)} onShowStats={() => setStatsOpen(true)} />}
             </div>
             {!fullscreen && (
               <CtrlButton label="미니 플레이어 (i)" onClick={goMiniplayer}>

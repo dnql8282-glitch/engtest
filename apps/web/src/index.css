@@ -349,6 +349,22 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .settings-label { flex: 1; }
 .settings-value { color: #ccc; font-weight: 400; }
 .settings-check { display: grid; width: 24px; }
+.settings-note { padding: 8px 16px 12px; color: #ccc; font-size: 13px; line-height: 18px; max-width: 260px; }
+.settings-item sup.hd { margin-left: 2px; color: #f00; font-size: 9px; font-weight: 700; }
+.ctrl-btn .hd-badge {
+  position: absolute; top: 10px; right: 6px; padding: 0 2px; border-radius: 2px;
+  background: #f00; color: #fff; font-size: 8px; font-weight: 700; line-height: 11px; pointer-events: none;
+}
+
+/* 전문가용 통계 패널 (왼쪽 위, 반투명 검정) */
+.stats-panel {
+  position: absolute; top: 12px; left: 12px; z-index: 6; max-width: calc(100% - 24px); max-height: calc(100% - 80px); overflow: auto;
+  padding: 8px 28px 8px 10px; border-radius: 4px; background: rgba(28, 28, 28, 0.85);
+  font: 11px/1.5 'Roboto Mono', Consolas, monospace; color: #fff;
+}
+.stats-panel th { padding-right: 12px; text-align: right; font-weight: 500; color: #ddd; white-space: nowrap; vertical-align: top; }
+.stats-panel td { word-break: break-all; }
+.stats-close { position: absolute; top: 6px; right: 6px; color: #fff; font: inherit; }
 
 /* 화면 가운데에 잠깐 떴다 사라지는 재생/일시정지·건너뛰기 표시 */
 .player-bubble {

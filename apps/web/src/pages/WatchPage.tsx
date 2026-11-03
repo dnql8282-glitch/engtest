@@ -23,6 +23,7 @@ import { VideoCard } from '../components/VideoCard';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { ShareDialog } from '../components/ShareDialog';
 import { video as videoEl } from '../player/playback';
+import { requestStartAt } from '../player/streaming';
 import { toast } from '../ui/toast';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { getComments } from '@mytube/core/commentService';
@@ -54,15 +55,11 @@ export function WatchPage() {
     else playerStore.open(video.id);
   }, [video]);
 
-  // 공유 링크의 ?t=초 : 영상이 준비되면 그 시점으로 이동
+  // 공유 링크의 ?t=초 : 이미 같은 영상이 재생 중이면 바로 이동, 아니면 불러올 때 그 시점부터 시작
   useEffect(() => {
     if (!video || !startAt) return;
-    const seek = () => {
-      if (videoEl.dataset.videoId === video.id) videoEl.currentTime = startAt;
-    };
-    if (videoEl.readyState >= 1 && videoEl.dataset.videoId === video.id) seek();
-    else videoEl.addEventListener('loadedmetadata', seek, { once: true });
-    return () => videoEl.removeEventListener('loadedmetadata', seek);
+    if (videoEl.dataset.videoId === video.id && videoEl.readyState >= 1) videoEl.currentTime = startAt;
+    else requestStartAt(video.id, startAt);
   }, [video, startAt]);
 
   // 다른 영상으로 가면 추천 필터 초기화

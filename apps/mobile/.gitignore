@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 개인 설정 (예시는 .env.example)
+.env
