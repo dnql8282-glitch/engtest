@@ -281,3 +281,82 @@ createMemoryStore()                    테스트: 메모리
 
 **③ 이번에 일부러 뺀 것**
 쇼츠, 실시간 스트리밍, 영상 업로드, 로그인, 알림, 답글. 이 기능들은 대부분 서버가 있어야 의미가 있어요.
+
+---
+
+## 6단계 — iOS·안드로이드 앱 (모노레포, 플레이어 오버레이, PiP·백그라운드 재생)
+
+**만든 것:** YouTube iOS 앱 구조의 모바일 앱 (`apps/mobile`)
+
+- 하단 탭(홈 · 쇼츠 · + · 구독 · 나), 상단 바(로고 · 전송 · 알림 · 검색), 칩
+- 전체 화면 플레이어 ↔ 탭 바 위 미니 플레이어 (아래로 끌어서 접기)
+- 자체 플레이어 컨트롤, 가로 스크롤 액션 버튼, 댓글 미리보기 카드 → 댓글 시트, 설명 시트
+- PiP, 백그라운드 재생, 잠금 화면 "지금 재생 중" 표시
+
+**새 개념 ①: 모노레포 (npm workspaces)**
+
+```
+packages/core    ← 순수 TypeScript      ┐
+packages/hooks   ← React 훅 (DOM 없음)  ┼─ 두 앱이 함께 사용
+apps/web         ← React DOM            ┘
+apps/mobile      ← React Native
+```
+
+- 1~5단계에서 `core`를 React 없이 만들어 둔 덕분에, **모바일 앱에서 서비스·검색·전역 상태·댓글 코드를 한 줄도 다시 쓰지 않았어요.**
+- 바뀐 건 두 가지예요.
+  - 저장소 구현을 하나 더 만들었어요: `asyncStorageStore.ts`, 7줄.
+  - 화면 컴포넌트를 React Native로 새로 그렸어요.
+- `useAsync`, `useUserState`처럼 React는 쓰지만 브라우저는 쓰지 않는 훅은 `packages/hooks`로 옮겨서 함께 써요.
+
+```
+웹 main.tsx:          configureStore(localStorageStore); userStore.init();
+모바일 _layout.tsx:    configureStore(asyncStorageStore); userStore.init();
+                       ↑ 4단계에서 만든 "의존성 주입"이 실제로 쓰인 순간
+```
+
+**새 개념 ②: 플레이어는 "페이지"가 아니라 "오버레이"**
+
+웹에서 시청 페이지는 `/watch/:id` 주소를 가진 **페이지**였어요. 그래서 다른 페이지로 가면 영상이 멈춰요.
+YouTube 앱은 영상을 미니로 접은 채 다른 탭을 볼 수 있어요. 이게 가능하려면 플레이어가 **모든 화면 위에 따로 떠 있어야** 해요.
+
+```
+_layout.tsx
+ ├─ Stack (탭, 검색, 채널, 재생목록 …)   ← 화면이 바뀌어도
+ └─ PlayerOverlay                        ← 이건 계속 살아 있음 → 재생이 안 끊김
+
+playerStore (core):  { videoId, mode: 'full' | 'mini' | null }
+  영상 카드 누름 → playerStore.open(id)   (페이지 이동이 아님!)
+  아래로 끌기    → playerStore.minimize()
+  미니 누름      → playerStore.expand()
+```
+
+- 플레이어 엔진(`useVideoPlayer`)은 앱 전체에 **하나**만 만들고, 영상이 바뀌면 소스만 교체해요(`replaceAsync`).
+- 크기 변화는 숫자 하나(`progress`: 0 = 전체, 1 = 미니)로 표현해요. 위치, 크기, 투명도를 모두 이 숫자에서 계산(interpolate)해요.
+  손가락으로 끄는 동안에는 이 숫자를 직접 바꾸고, 손을 떼면 0이나 1로 스프링처럼 돌아가요.
+
+**새 개념 ③: 네이티브 기능은 "설정 + 속성"으로 켠다**
+
+| 기능 | 앱 설정 (app.json 플러그인 → 네이티브 설정 자동 생성) | 코드 |
+|---|---|---|
+| 백그라운드 재생 | `supportsBackgroundPlayback` → iOS `UIBackgroundModes: audio`, 안드로이드 포그라운드 서비스 | `player.staysActiveInBackground = true` |
+| 잠금 화면 컨트롤 | (위와 같음) | `player.showNowPlayingNotification = true` + `metadata`(제목, 채널, 썸네일) |
+| PiP | `supportsPictureInPicture` | `<VideoView allowsPictureInPicture startsPictureInPictureAutomatically>` |
+
+- 네이티브 설정(Info.plist, AndroidManifest)을 손으로 고치지 않아요. `app.json`에 적으면 Expo가 빌드할 때 만들어 줘요.
+  이 방식을 CNG(Continuous Native Generation)라고 해요.
+- 설정이 바뀌면 앱을 **다시 빌드**해야 해요. 그래서 Expo Go 앱으로는 이 기능들을 확인할 수 없고, 개발 빌드(`npx expo run:ios`)가 필요해요.
+
+**새 개념 ④: 같은 디자인 토큰, 다른 플랫폼**
+
+`apps/mobile/src/theme/tokens.ts`는 웹 CSS 변수와 **같은 이름, 같은 값**이에요(`bg`, `text`, `surface` …).
+웹은 CSS 변수를 바꾸고, 모바일은 토큰 객체를 바꿔요. 테마 값 자체는 `userStore` 하나가 관리해요.
+
+**검증한 것 / 못 한 것**
+
+- 확인함
+  - 타입 검사, iOS·안드로이드 번들링(`expo export`) 성공
+  - 네이티브 설정에 백그라운드 모드·PiP·포그라운드 서비스가 들어가는 것
+  - 웹 버전으로 아이폰 크기 화면, 미니 플레이어, 끌어서 접기를 직접 눌러 보며 확인
+- 아직 못 함
+  - 실제 아이폰에서 PiP, 백그라운드, 잠금 화면 동작 확인 (이 클라우드 환경에는 아이폰·Mac이 없어요)
+  - Mac에서 `apps/mobile/README.md`의 "확인해 볼 것" 표대로 확인해 주세요.

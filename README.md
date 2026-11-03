@@ -1,6 +1,7 @@
 # MyTube — 공부용 영상 앱 클론
 
-YouTube 웹사이트처럼 동작하는 영상 앱을 **서버 없이** 만들어 보는 학습 프로젝트예요.
+YouTube처럼 동작하는 영상 앱을 **서버 없이** 만들어 보는 학습 프로젝트예요.
+**웹 앱**과 **iOS·안드로이드 앱**이 같은 핵심 코드(`packages/core`)를 함께 써요.
 
 ![홈 화면](docs/screenshot-desktop.jpg)
 
@@ -11,49 +12,42 @@ YouTube 웹사이트처럼 동작하는 영상 앱을 **서버 없이** 만들�
 ## 실행 방법
 
 ```bash
-npm install
-npm run dev     # http://localhost:5173 에서 확인
-npm test        # core 로직 자동 테스트
+npm install          # 저장소 루트에서 한 번
+npm run dev:web      # 웹 앱: http://localhost:5173
+npm test             # core 로직 자동 테스트
 ```
+
+모바일 앱(아이폰·안드로이드) 실행 방법은 [apps/mobile/README.md](apps/mobile/README.md)에 있어요.
+
+![iPhone 앱 화면](docs/screenshot-ios.jpg)
 
 ## 기술 스택
 
 - **TypeScript**: youtube.com도 JavaScript/TypeScript로 만들어져 있어요.
-- **React**: 화면을 컴포넌트 단위로 만들어요.
-- **Vite**: 개발 서버와 빌드를 맡아요.
+- **웹**: React + Vite
+- **모바일**: React Native + Expo SDK 58 (expo-router, expo-video)
+- **npm workspaces**: 저장소 하나에 여러 앱과 공용 패키지를 함께 관리해요(모노레포).
 
-## 폴더 구조 (이식성이 핵심)
+## 폴더 구조
 
 ```
-src/
-  core/               ← React/브라우저에 의존하지 않는 순수 TypeScript
-    types.ts          데이터 타입 정의
-    format.ts         조회수·시간 표시 함수
-    videoService.ts   영상 데이터 접근 (나중에 서버 API로 교체할 자리)
-    commentService.ts 댓글 읽기/쓰기
-    search.ts         검색 규칙
-    storage.ts        저장소 약속(인터페이스) — 플랫폼이 실제 저장소를 끼워 넣음
-    history.ts        시청 기록 날짜별 묶기
-    userStore.ts      전역 상태 (구독, 좋아요, 시청 기록, 나중에 볼, 테마)
-    data/             가짜(mock) 데이터
-  web/                ← 웹 전용 화면 (React DOM)
-    components/       Header, Sidebar, VideoCard, Comments ...
-    pages/            HomePage, WatchPage, ResultsPage ...
-    hooks/            useAsync, useUserState ...
-    platform/         웹 전용 구현 (localStorage)
-  App.tsx             앱 뼈대 (레이아웃)
+packages/
+  core/      순수 TypeScript — 타입, 데이터 서비스, 검색 규칙, 전역 상태(userStore, playerStore), 저장소 약속
+  hooks/     React 훅 — useAsync, useUserState, usePlayerState (웹·모바일 공용, DOM/네이티브 없음)
+apps/
+  web/       웹 앱 (React DOM + CSS)
+  mobile/    iOS·안드로이드 앱 (React Native + Expo)
+docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 스크린샷
 ```
-
-`core/`는 화면 코드와 분리돼 있어요. 그래서 나중에 React Native로 모바일 앱을 만들 때 `core/`를 그대로 가져가고, 화면(`web/`)만 새로 만들면 돼요.
 
 ## 아키텍처 한눈에 보기
 
 ```
-화면 층   (web/)              React 컴포넌트. 플랫폼마다 새로 만듦
+화면 층   (apps/web, apps/mobile)  플랫폼마다 따로 만듦
    ↓ 요청만 함
-서비스 층 (core/videoService)  화면이 데이터를 얻는 유일한 창구
+서비스 층 (packages/core)        화면이 데이터를 얻는 유일한 창구 (웹·모바일 공용)
    ↓
-데이터 층 (core/data/)         지금은 가짜 데이터, 나중엔 서버 API
+데이터 층 (packages/core/data)   지금은 가짜 데이터, 나중엔 서버 API
 ```
 
 - 위층은 바로 아래층만 알고, 아래층은 위층을 몰라요.
@@ -70,6 +64,7 @@ src/
 - [x] **3단계**: 검색 기능 (자동완성, 결과 페이지, 테스트)
 - [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
 - [x] **5단계**: 시청 기록, 좋아요/나중에 볼 재생목록, 구독 피드, 인기 급상승, 채널 페이지, 테마 전환
+- [x] **6단계**: iOS·안드로이드 앱 (YouTube iOS 앱 UI, 미니 플레이어, PiP, 백그라운드·잠금 화면 재생)
 
 ## 주요 화면과 주소
 
