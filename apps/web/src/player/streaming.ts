@@ -114,6 +114,9 @@ let pendingStart: { id: string; t: number } | null = null;
 export function requestStartAt(videoId: string, t: number) {
   pendingStart = { id: videoId, t };
 }
+export function hasPendingStart(videoId: string) {
+  return pendingStart?.id === videoId;
+}
 
 /** 영상 불러오기: 스트리밍(DASH) → 안 되면 HLS(구형 iPhone) → 안 되면 MP4 파일 */
 export async function loadVideo(v: Video) {

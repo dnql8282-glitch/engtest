@@ -3,10 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Icon } from './Icon';
 import { Logo } from './Logo';
 import { SearchBox } from './SearchBox';
-import { Menu } from './Menu';
 import { NotificationsButton } from './NotificationsButton';
-import { userStore } from '@mytube/core/userStore';
-import { useUserState } from '@mytube/hooks/useUserStore';
+import { AccountMenu } from './AccountMenu';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -18,7 +16,6 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   const [params] = useSearchParams();
   const query = params.get('search_query') ?? '';
   const [mobileSearch, setMobileSearch] = useState(false);
-  const { theme } = useUserState();
 
   return (
     <header className={`header ${mobileSearch ? 'mobile-search' : ''}`}>
@@ -55,20 +52,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           <span>만들기</span>
         </button>
         <NotificationsButton />
-        <Menu
-          items={[
-            {
-              icon: <Icon name={theme === 'dark' ? 'sun' : 'moon'} />,
-              label: theme === 'dark' ? '디자인: 밝은 테마로 바꾸기' : '디자인: 어두운 테마로 바꾸기',
-              onSelect: () => userStore.setTheme(theme === 'dark' ? 'light' : 'dark'),
-            },
-          ]}
-          trigger={(props) => (
-            <button className="avatar-btn" aria-label="내 계정" {...props}>
-              <span className="avatar small" style={{ background: '#5c6bc0' }}>나</span>
-            </button>
-          )}
-        />
+        <AccountMenu />
       </div>
     </header>
   );

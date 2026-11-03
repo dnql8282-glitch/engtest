@@ -7,6 +7,7 @@ import { useAsync } from '@mytube/hooks/useAsync';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { Icon } from './Icon';
 import { Menu } from './Menu';
+import { AccountAvatar } from './AccountAvatar';
 
 // 댓글 영역: 댓글 수 + 정렬 메뉴, 입력창, 댓글과 답글
 // 댓글은 이 영상에서만 쓰는 데이터라 지역 상태로 관리하고,
@@ -131,7 +132,7 @@ function CommentForm({
         setFocused(false);
       }}
     >
-      <span className={`avatar ${small ? 'small' : 'large'}`} style={{ background: '#5c6bc0' }}>나</span>
+      <AccountAvatar size={small ? 32 : 40} />
       <div className="comment-form-body">
         <input
           className="comment-input"

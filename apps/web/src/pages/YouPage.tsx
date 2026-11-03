@@ -6,6 +6,10 @@ import { useUserState } from '@mytube/hooks/useUserStore';
 import { Thumbnail } from '../components/Thumbnail';
 import { Icon, type IconName } from '../components/Icon';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { AccountAvatar } from '../components/AccountAvatar';
+import { SignInDialog } from '../components/SignInDialog';
+import { useAccountState } from '@mytube/hooks/useAccountState';
+import { useState } from 'react';
 
 // "나" 페이지: /feed/you — 프로필, 최근 기록(가로 스크롤), 재생목록, 설정
 export function YouPage() {
@@ -13,17 +17,33 @@ export function YouPage() {
   const { data: history = [] } = useAsync(getVideosByIds, user.history.slice(0, 12).map((h) => h.videoId).join(','));
   const liked = likedVideoIds(user);
   const dark = user.theme === 'dark';
+  const { currentId, accounts } = useAccountState();
+  const me = accounts.find((a) => a.id === currentId) ?? null;
+  const [signIn, setSignIn] = useState(false);
   useDocumentTitle('나');
 
   return (
     <div className="you-page">
-      <div className="you-profile">
-        <span className="avatar huge-sm" style={{ background: '#5c6bc0' }}>나</span>
-        <div>
-          <h1 className="you-name">나</h1>
-          <p className="you-handle">@me · 공부용 계정</p>
+      {me ? (
+        <div className="you-profile">
+          <AccountAvatar size={120} className="huge-sm" />
+          <div>
+            <h1 className="you-name">{me.name}</h1>
+            <p className="you-handle">{me.email ?? '테스트 계정'} · {me.provider === 'google' ? 'Google 계정' : '이 기기 전용'}</p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="you-guest">
+          <AccountAvatar account={null} size={72} />
+          <h1 className="you-name">좋아하는 동영상을 즐겨 보세요</h1>
+          <p className="you-handle">로그인하면 시청 기록, 재생목록, 이어서 보기가 내 계정에 저장돼요. 지금은 게스트로 이 기기에만 저장돼요.</p>
+          <button className="signin-btn" onClick={() => setSignIn(true)}>
+            <AccountAvatar account={null} size={24} />
+            <span>로그인</span>
+          </button>
+          {signIn && <SignInDialog onClose={() => setSignIn(false)} />}
+        </div>
+      )}
 
       <section className="you-section">
         <div className="you-section-head">

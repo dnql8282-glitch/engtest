@@ -652,6 +652,48 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .channel-about li { display: flex; align-items: center; gap: 16px; }
 
 /* =========================================================
+   계정: 로그인 버튼, 계정 메뉴, 로그인 창
+   ========================================================= */
+.avatar-img { object-fit: cover; }
+.avatar-guest { background: var(--surface); color: var(--text-sub); }
+.signin-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 8px;
+  border: 1px solid var(--divider); border-radius: 18px; color: var(--link); font-size: 14px; font-weight: 500; white-space: nowrap;
+}
+.signin-btn:hover { background: rgba(62, 166, 255, 0.12); border-color: transparent; }
+.signin-btn .avatar-guest { background: none; color: var(--link); }
+.account-popup {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 160; width: 300px; padding: 8px 0;
+  border-radius: 12px; background: var(--popup-bg); box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+}
+.account-head { display: flex; gap: 16px; padding: 8px 16px 16px; border-bottom: 1px solid var(--divider); margin-bottom: 8px; }
+.account-head b { display: block; font-size: 16px; font-weight: 500; }
+.account-head small { display: block; color: var(--text-sub); font-size: 13px; margin-top: 2px; }
+.account-link { display: inline-block; margin-top: 8px; color: var(--link); font-size: 14px; }
+.account-row { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 40px; padding: 4px 16px; font-size: 14px; text-align: left; }
+.account-row:hover { background: var(--popup-hover); }
+.account-row.back { font-size: 16px; border-bottom: 1px solid var(--divider); margin-bottom: 8px; min-height: 48px; }
+.account-text { flex: 1; display: flex; flex-direction: column; }
+.account-text small { color: var(--text-sub); font-size: 12px; }
+.account-row > svg:last-child:not(:first-child) { margin-left: auto; }
+.account-sep { height: 1px; margin: 8px 0; background: var(--divider); }
+.signin-lead { margin-bottom: 16px; color: var(--text-sub); font-size: 14px; line-height: 20px; }
+.google-btn { display: flex; justify-content: center; min-height: 44px; }
+.signin-note { padding: 12px; border-radius: 8px; background: var(--surface); font-size: 13px; line-height: 19px; }
+.signin-note code { font-size: 12px; }
+.signin-error { margin-top: 8px; color: var(--danger); font-size: 13px; }
+.signin-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 12px; color: var(--text-sub); font-size: 12px; }
+.signin-divider::before, .signin-divider::after { content: ''; flex: 1; height: 1px; background: var(--divider); }
+.signin-hint { margin-top: 8px; color: var(--text-sub); font-size: 12px; }
+.you-guest { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 16px; text-align: center; }
+.you-guest .you-handle { max-width: 420px; line-height: 20px; }
+
+/* 썸네일 아래 시청 진행선 (YouTube와 같은 빨간 선) */
+.thumb-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255, 255, 255, 0.35); }
+.thumb-progress span { display: block; height: 100%; background: #f00; }
+.miniplayer-resume { margin-bottom: 4px; color: var(--link); font-size: 12px; font-weight: 500; }
+
+/* =========================================================
    하단 내비게이션 (휴대폰만)
    ========================================================= */
 .bottom-nav { display: none; }
@@ -753,6 +795,9 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
   .bottom-nav-item svg { width: 24px; height: 24px; }
   .bottom-nav-item.active { font-weight: 700; }
 
+  .signin-btn span { display: none; }
+  .signin-btn { padding: 0 6px; border: 0; }
+  .account-popup { position: fixed; top: var(--header-h); right: 8px; left: 8px; width: auto; }
   .toaster { left: 12px; right: 12px; bottom: calc(60px + env(safe-area-inset-bottom)); }
   .thread-children { margin-left: 44px; }
   .channel-sort { padding: 12px 12px 0; }

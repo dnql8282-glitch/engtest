@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Icon, type IconName } from './Icon';
+import { AccountAvatar } from './AccountAvatar';
 
 // 좁은 화면(휴대폰)에서만 보이는 하단 내비게이션 — YouTube 모바일과 같은 구성
 const ITEMS: { to: string; label: string; icon: IconName; match: (p: string) => boolean }[] = [
@@ -18,7 +19,7 @@ export function BottomNav() {
         return (
           <Link key={item.to} to={item.to} className={`bottom-nav-item ${active ? 'active' : ''}`} aria-current={active ? 'page' : undefined}>
             {item.icon === 'you' ? (
-              <span className={`avatar tiny ${active ? 'ring' : ''}`} style={{ background: '#5c6bc0' }}>나</span>
+              <AccountAvatar size={24} className={active ? 'ring' : ''} />
             ) : (
               <Icon name={item.icon} />
             )}

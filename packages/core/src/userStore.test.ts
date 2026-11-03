@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { configureStore, createMemoryStore, readJson } from './storage';
+import { configureStore, createMemoryStore, readScoped } from './storage';
 import { resetUserStoreForTest, userStore } from './userStore';
 import { addComment, deleteComment, getComments } from './commentService';
 
@@ -19,7 +19,7 @@ describe('userStore', () => {
     userStore.toggleSubscription('c3');
     expect(userStore.isSubscribed('c3')).toBe(true);
     await Promise.resolve();
-    expect(await readJson('subscriptions', [])).toContain('c3');
+    expect(await readScoped('subscriptions', [])).toContain('c3');
     userStore.toggleSubscription('c3');
     expect(userStore.isSubscribed('c3')).toBe(false);
   });

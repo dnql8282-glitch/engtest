@@ -1,49 +1,63 @@
 import type { Comment, CommentSort } from './types';
 import { videos } from './data/videos';
 import { seedComments } from './data/comments';
-import { readJson, writeJson } from './storage';
+import { currentScope, readJson, writeJson } from './storage';
+import { accountStore } from './accountStore';
 
-// 댓글 서비스. 가짜 댓글 + 내가 쓴 댓글(저장소에 보관)을 합쳐서 돌려줘요.
+// 댓글 서비스. 가짜 댓글 + 이 기기에서 쓴 댓글(저장소에 보관)을 합쳐서 돌려줘요.
 // 서버가 생기면 GET/POST/DELETE /videos/:id/comments 로 바꾸면 되는 자리예요.
+//
+// 댓글은 "공개" 데이터라 계정과 상관없이 모두에게 보여요 → 공용 저장 공간에 둬요.
+// 대신 누가 썼는지(authorId)를 남겨서, 지금 로그인한 계정이 쓴 댓글만 "내 댓글"(삭제 가능)이 돼요.
 
 const KEY = 'myComments';
 
-async function loadMine(): Promise<Comment[]> {
-  return readJson<Comment[]>(KEY, []);
+type Stored = Omit<Comment, 'mine'> & { authorId?: string };
+
+async function loadStored(): Promise<Stored[]> {
+  return readJson<Stored[]>(KEY, []);
+}
+
+const withMine = (c: Stored): Comment => ({ ...c, mine: (c.authorId ?? 'guest') === currentScope() });
+
+/** 지금 계정의 이름·색 (게스트는 '@나') */
+function author() {
+  const a = accountStore.current();
+  return a ? { author: `@${a.name}`, authorColor: a.color } : { author: '@나', authorColor: '#5c6bc0' };
 }
 
 export async function getComments(videoId: string): Promise<Comment[]> {
   const video = videos.find((v) => v.id === videoId);
   if (!video) return [];
-  const mine = (await loadMine())
+  const local = (await loadStored())
     .filter((c) => c.videoId === videoId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  return [...mine, ...seedComments(videoId, video.uploadedAt)]; // 내 댓글이 맨 위
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map(withMine);
+  return [...local, ...seedComments(videoId, video.uploadedAt)];
 }
 
 export async function addComment(videoId: string, text: string, parentId?: string): Promise<Comment> {
   const trimmed = text.trim();
   if (!trimmed) throw new Error('빈 댓글은 등록할 수 없어요');
-  const comment: Comment = {
+  const stored: Stored = {
     id: `${videoId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     videoId,
-    author: '@나',
-    authorColor: '#5c6bc0',
+    ...author(),
+    authorId: currentScope(),
     text: trimmed,
     createdAt: new Date().toISOString(),
     likes: 0,
-    mine: true,
     ...(parentId ? { parentId } : {}),
   };
-  await writeJson(KEY, [...(await loadMine()), comment]);
-  return comment;
+  await writeJson(KEY, [...(await loadStored()), stored]);
+  return withMine(stored);
 }
 
 /** 댓글 삭제. 그 댓글에 달린 내 답글도 함께 지워요. */
 export async function deleteComment(commentId: string): Promise<void> {
   await writeJson(
     KEY,
-    (await loadMine()).filter((c) => c.id !== commentId && c.parentId !== commentId),
+    (await loadStored()).filter((c) => c.id !== commentId && c.parentId !== commentId),
   );
 }
 

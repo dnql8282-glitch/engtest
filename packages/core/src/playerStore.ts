@@ -10,6 +10,8 @@ export type PlayerMode = 'full' | 'mini';
 export interface PlayerState {
   videoId: string | null;
   mode: PlayerMode | null;
+  /** 앱을 다시 켰을 때 "이어서 시청하기"로 띄운 상태 (자동재생하지 않고 기다려요) */
+  restored?: boolean;
 }
 
 let state: PlayerState = { videoId: null, mode: null };
@@ -28,6 +30,15 @@ export const playerStore = {
   getSnapshot(): PlayerState {
     return state;
   },
+  /** 앱을 다시 켰을 때: 마지막에 보던 영상을 미니 플레이어로, 재생은 하지 않고 */
+  restore(videoId: string) {
+    if (state.videoId) return; // 이미 뭔가 보고 있으면 건드리지 않아요
+    setState({ videoId, mode: 'mini', restored: true });
+  },
+  /** "이어서 시청하기" 표시를 지워요 (사용자가 재생을 누름) */
+  markResumed() {
+    if (state.restored) setState({ videoId: state.videoId, mode: state.mode });
+  },
   /** 영상 열기: 항상 전체 화면으로 */
   open(videoId: string) {
     setState({ videoId, mode: 'full' });
@@ -40,7 +51,8 @@ export const playerStore = {
     if (state.videoId) setState({ ...state, mode: 'mini' });
   },
   expand() {
-    if (state.videoId) setState({ ...state, mode: 'full' });
+    // 펼치면 "이어서 시청하기" 대기 상태도 끝나요
+    if (state.videoId) setState({ videoId: state.videoId, mode: 'full' });
   },
   close() {
     setState({ videoId: null, mode: null });

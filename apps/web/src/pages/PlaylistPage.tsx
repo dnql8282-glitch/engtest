@@ -7,6 +7,7 @@ import { ListSkeleton, VideoListItem } from '../components/VideoListItem';
 import { EmptyState } from '../components/EmptyState';
 import { NotFoundPage } from './NotFoundPage';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { accountStore } from '@mytube/core/accountStore';
 
 // 재생목록: /playlist?list=LL (좋아요 표시한 동영상) / ?list=WL (나중에 볼 동영상)
 // 두 목록은 데이터 출처만 다르고 화면은 같아서, 한 페이지가 주소의 list 값에 따라 출처를 골라요.
@@ -38,7 +39,7 @@ export function PlaylistPage() {
             {cover ? <img src={cover.thumbnailUrl} alt="" /> : <div className="skeleton-thumb" />}
           </div>
           <h1 className="playlist-title">{meta.title}</h1>
-          <p className="playlist-owner">나</p>
+          <p className="playlist-owner">{accountStore.current()?.name ?? '게스트'}</p>
           <p className="playlist-meta">동영상 {ids.length}개 · 비공개</p>
         </div>
       </aside>

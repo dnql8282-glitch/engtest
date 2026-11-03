@@ -48,3 +48,29 @@ export async function writeJson(key: string, value: unknown): Promise<void> {
     // 저장 공간이 꽉 찼거나 막힌 경우: 이번 세션 동안은 메모리 상태로만 동작
   }
 }
+
+// ── 계정별 저장 공간 ─────────────────────────────────────────────────────────
+// 같은 기기에서 여러 계정을 쓰면 구독·시청 기록 같은 데이터는 계정마다 따로 있어야 해요.
+// 키 앞에 계정 id를 붙여 공간을 나눠요:  mytube:u:<계정id>:history
+// 테마·볼륨처럼 "기기 설정"은 readJson/writeJson(공용)으로, 계정 데이터는 아래 두 함수로 읽고 써요.
+let scope = 'guest';
+
+export function setStorageScope(accountId: string | null) {
+  scope = accountId ?? 'guest';
+}
+
+export function currentScope() {
+  return scope;
+}
+
+export async function readScoped<T>(key: string, fallback: T): Promise<T> {
+  const v = await readJson<T | null>(`u:${scope}:${key}`, null);
+  if (v !== null) return v;
+  // 계정 기능 이전에 저장된 데이터(게스트)는 그대로 이어서 써요
+  if (scope === 'guest') return readJson<T>(key, fallback);
+  return fallback;
+}
+
+export async function writeScoped(key: string, value: unknown): Promise<void> {
+  await writeJson(`u:${scope}:${key}`, value);
+}

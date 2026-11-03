@@ -51,8 +51,15 @@ export function WatchPage() {
   // 미니 플레이어에서 같은 영상을 펼친 경우엔 이어서 재생(expand), 다른 영상이면 새로 재생(open).
   useEffect(() => {
     if (!video) return;
-    if (playerStore.getSnapshot().videoId === video.id) playerStore.expand();
-    else playerStore.open(video.id);
+    const snap = playerStore.getSnapshot();
+    if (snap.videoId === video.id) {
+      playerStore.expand();
+      // "이어서 시청하기"로 대기 중이던 영상을 펼치면 바로 재생
+      if (snap.restored) {
+        userStore.recordWatch(video.id);
+        void videoEl.play().catch(() => {});
+      }
+    } else playerStore.open(video.id);
   }, [video]);
 
   // 공유 링크의 ?t=초 : 이미 같은 영상이 재생 중이면 바로 이동, 아니면 불러올 때 그 시점부터 시작
