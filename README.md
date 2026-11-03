@@ -27,11 +27,17 @@ src/
   core/               ← React/브라우저에 의존하지 않는 순수 TypeScript
     types.ts          데이터 타입 정의
     format.ts         조회수·시간 표시 함수
-    videoService.ts   데이터 접근 (나중에 서버 API로 교체할 자리)
+    videoService.ts   영상 데이터 접근 (나중에 서버 API로 교체할 자리)
+    commentService.ts 댓글 읽기/쓰기
+    search.ts         검색 규칙
+    storage.ts        저장소 약속(인터페이스) — 플랫폼이 실제 저장소를 끼워 넣음
+    userStore.ts      전역 상태 (구독, 좋아요)
     data/             가짜(mock) 데이터
   web/                ← 웹 전용 화면 (React DOM)
-    components/       Header, Sidebar, VideoCard, Thumbnail
-    pages/            HomePage
+    components/       Header, Sidebar, VideoCard, Comments ...
+    pages/            HomePage, WatchPage, ResultsPage ...
+    hooks/            useAsync, useUserState ...
+    platform/         웹 전용 구현 (localStorage)
   App.tsx             앱 뼈대 (레이아웃)
 ```
 
@@ -59,7 +65,7 @@ src/
 - [x] **1.5단계**: YouTube 다크 모드 디자인 (레이아웃·색·크기 맞춤, Material 아이콘, 반응형)
 - [x] **2단계**: 영상 시청 페이지 (라우팅, 비디오 플레이어, 추천 영상 목록)
 - [x] **3단계**: 검색 기능 (자동완성, 결과 페이지, 테스트)
-- [ ] **4단계**: 좋아요, 댓글, 구독 (localStorage에 저장)
+- [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
 - [ ] **5단계**: 시청 기록, 보관함, 다크 모드 토글
 
 ## 데이터 출처

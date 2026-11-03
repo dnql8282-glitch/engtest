@@ -11,6 +11,9 @@ import {
 import { useAsync } from '../hooks/useAsync';
 import { Icon } from '../components/Icon';
 import { CompactVideoCard } from '../components/CompactVideoCard';
+import { SubscribeButton } from '../components/SubscribeButton';
+import { RatingButtons } from '../components/RatingButtons';
+import { Comments } from '../components/Comments';
 import { NotFoundPage } from './NotFoundPage';
 
 // 시청 페이지: /watch/:videoId
@@ -57,21 +60,11 @@ function VideoInfo({ video }: { video: VideoWithChannel }) {
             <p className="owner-name">{video.channel.name}</p>
             <p className="owner-subs">구독자 {formatCount(video.channel.subscribers)}명</p>
           </div>
-          {/* 구독 기능은 4단계에서 연결 */}
-          <button className="subscribe-btn">구독</button>
+          <SubscribeButton channelId={video.channel.id} />
         </div>
 
         <div className="actions">
-          <div className="pill segmented">
-            <button className="pill-part">
-              <Icon name="thumbUp" />
-              <span>{formatCount(video.likes)}</span>
-            </button>
-            <span className="pill-divider" />
-            <button className="pill-part" aria-label="싫어요">
-              <Icon name="thumbDown" />
-            </button>
-          </div>
+          <RatingButtons video={video} />
           <button className="pill">
             <Icon name="share" />
             <span>공유</span>
@@ -85,6 +78,7 @@ function VideoInfo({ video }: { video: VideoWithChannel }) {
 
       {/* key: 영상이 바뀌면 "더보기" 펼침 상태를 초기화 */}
       <Description key={video.id} video={video} />
+      <Comments key={video.id} videoId={video.id} />
     </>
   );
 }

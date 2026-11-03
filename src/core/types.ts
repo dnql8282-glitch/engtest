@@ -29,3 +29,16 @@ export interface Video {
 export interface VideoWithChannel extends Video {
   channel: Channel;
 }
+
+export type Rating = 'like' | 'dislike' | null;
+
+export interface Comment {
+  id: string;
+  videoId: string;
+  author: string;
+  authorColor: string;
+  text: string;
+  createdAt: string;
+  likes: number;
+  mine: boolean; // 내가 쓴 댓글이면 삭제 가능
+}

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { Channel } from '../../core/types';
 import { getChannels } from '../../core/videoService';
+import { useAsync } from '../hooks/useAsync';
+import { useUserState } from '../hooks/useUserStore';
 import { Icon, type IconName } from './Icon';
 import { Logo } from './Logo';
 
@@ -39,10 +39,10 @@ const exploreItems: NavItem[] = [
 ];
 
 export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps) {
-  const [subs, setSubs] = useState<Channel[]>([]);
-  useEffect(() => {
-    getChannels().then(setSubs);
-  }, []);
+  const { data: channels = [] } = useAsync(getChannels, 'all');
+  const { subscriptions } = useUserState();
+  // 전역 상태의 구독 ID 목록으로 채널을 골라요. 시청 페이지에서 구독하면 여기도 바로 바뀌어요.
+  const subs = channels.filter((c) => subscriptions.includes(c.id));
 
   if (variant === 'mini') {
     return (
@@ -85,6 +85,7 @@ export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps
 
       <section className="guide-section">
         <h3 className="guide-title">구독</h3>
+        {subs.length === 0 && <p className="guide-empty">구독한 채널이 없습니다.</p>}
         {subs.map((c) => (
           <Link key={c.id} to="/" className="guide-item" onClick={onClose}>
             <span className="avatar tiny" style={{ background: c.avatarColor }}>{c.name[0]}</span>
