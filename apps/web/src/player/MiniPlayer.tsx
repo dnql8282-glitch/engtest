@@ -52,6 +52,15 @@ export function MiniPlayer() {
           <p className="miniplayer-channel">{current.channel.name}</p>
         </div>
       )}
+      {/* 휴대폰에서는 막대 모양 미니 플레이어: 오른쪽에 재생/닫기 버튼 */}
+      <div className="miniplayer-inline">
+        <button aria-label={pb.playing ? '일시정지' : '재생'} onClick={() => (pb.ended ? void video.play() : controls.toggle())}>
+          <PIcon name={pb.ended ? 'replay' : pb.playing ? 'pause' : 'play'} />
+        </button>
+        <button aria-label="닫기" onClick={() => playerStore.close()}>
+          <PIcon name="close" />
+        </button>
+      </div>
     </div>
   );
 }

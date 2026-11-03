@@ -100,3 +100,12 @@ export async function getChannelPage(channelId: string): Promise<ChannelPageData
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
   return { channel, videos: list };
 }
+
+/** Shorts: 60초 이하 영상 (최신순) */
+export const SHORTS_MAX_SEC = 60;
+export async function getShorts(): Promise<VideoWithChannel[]> {
+  await delay(150);
+  return allWithChannel()
+    .filter((v) => v.durationSec <= SHORTS_MAX_SEC)
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+}

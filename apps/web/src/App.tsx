@@ -11,6 +11,9 @@ import { HistoryPage } from './pages/HistoryPage';
 import { PlaylistPage } from './pages/PlaylistPage';
 import { ChannelPage } from './pages/ChannelPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ShortsPage } from './pages/ShortsPage';
+import { YouPage } from './pages/YouPage';
+import { BottomNav } from './components/BottomNav';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { PlayerController } from './player/PlayerController';
@@ -53,6 +56,8 @@ export default function App() {
           <Route path="/feed/trending" element={<TrendingPage />} />
           <Route path="/feed/subscriptions" element={<SubscriptionsPage />} />
           <Route path="/feed/history" element={<HistoryPage />} />
+          <Route path="/feed/you" element={<YouPage />} />
+          <Route path="/shorts" element={<ShortsPage />} />
           <Route path="/playlist" element={<PlaylistPage />} />
           <Route path="/channel/:channelId" element={<ChannelPage />} />
           <Route path="*" element={<NotFoundPage />} />
@@ -61,6 +66,8 @@ export default function App() {
       {/* 재생 엔진과 미니 플레이어는 페이지 밖(앱 맨 위층)에 있어서 페이지를 옮겨도 살아 있어요 */}
       <PlayerController />
       <MiniPlayer />
+      {/* 휴대폰 화면에서만 보이는 하단 메뉴 (CSS로 표시/숨김) */}
+      <BottomNav />
     </div>
   );
 }

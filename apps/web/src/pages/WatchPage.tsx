@@ -19,6 +19,9 @@ import { Comments } from '../components/Comments';
 import { NotFoundPage } from './NotFoundPage';
 import { playerStore } from '@mytube/core/playerStore';
 import { FullPlayer } from '../player/FullPlayer';
+import { VideoCard } from '../components/VideoCard';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { getComments } from '@mytube/core/commentService';
 
 // 시청 페이지: /watch/:videoId
 // 주소의 videoId가 이 페이지의 "입력값"이에요. 주소만 바뀌면 같은 컴포넌트가 다른 영상을 보여줘요.
@@ -28,6 +31,7 @@ export function WatchPage() {
   const { data: video, loading } = useAsync(getVideo, videoId);
   const { data: related } = useAsync(getRelatedVideos, videoId);
   const { playerPrefs } = useUserState();
+  const isMobile = useMediaQuery('(max-width: 792px)');
 
   // 다른 영상으로 넘어가면 맨 위로 스크롤
   useEffect(() => {
@@ -56,21 +60,22 @@ export function WatchPage() {
   return (
     <div className={`watch ${playerPrefs.theater ? 'theater' : ''}`}>
       {/* 영화관 모드: 플레이어가 위에 가로로 꽉 차고, 아래에 두 칸 */}
-      {playerPrefs.theater && <div className="theater-stage">{player}</div>}
+      {playerPrefs.theater && !isMobile && <div className="theater-stage">{player}</div>}
       <div className="watch-columns">
         <div className="watch-primary">
-          {!playerPrefs.theater && player}
-          {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} />}
+          {(!playerPrefs.theater || isMobile) && player}
+          {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} isMobile={isMobile} />}
         </div>
         <aside className="watch-secondary">
-          {related?.map((v) => <CompactVideoCard key={v.id} video={v} />)}
+          {/* 휴대폰에서는 추천 영상도 홈처럼 큰 카드로 */}
+          {related?.map((v) => (isMobile ? <VideoCard key={v.id} video={v} /> : <CompactVideoCard key={v.id} video={v} />))}
         </aside>
       </div>
     </div>
   );
 }
 
-function VideoInfo({ video }: { video: VideoWithChannel }) {
+function VideoInfo({ video, isMobile }: { video: VideoWithChannel; isMobile: boolean }) {
   return (
     <>
       <h1 className="watch-title">{video.title}</h1>
@@ -99,7 +104,7 @@ function VideoInfo({ video }: { video: VideoWithChannel }) {
 
       {/* key: 영상이 바뀌면 "더보기" 펼침 상태를 초기화 */}
       <Description key={video.id} video={video} />
-      <Comments key={video.id} videoId={video.id} />
+      {isMobile ? <MobileComments key={video.id} videoId={video.id} /> : <Comments key={video.id} videoId={video.id} />}
     </>
   );
 }
@@ -162,6 +167,27 @@ function WatchLaterButton({ videoId }: { videoId: string }) {
     <button className="pill hide-narrow" onClick={() => userStore.toggleWatchLater(videoId)} aria-pressed={saved}>
       <Icon name="clock" />
       <span>{saved ? '저장됨' : '나중에 보기'}</span>
+    </button>
+  );
+}
+
+// 휴대폰: 댓글은 처음엔 "댓글 N + 인기 댓글 한 줄" 카드로 접혀 있고, 누르면 펼쳐져요 (YouTube 앱과 같은 방식)
+function MobileComments({ videoId }: { videoId: string }) {
+  const [open, setOpen] = useState(false);
+  const { data: comments } = useAsync(getComments, videoId);
+  if (open) return <Comments videoId={videoId} />;
+  const top = comments?.[0];
+  return (
+    <button className="comments-card" onClick={() => setOpen(true)}>
+      <span className="comments-card-head">
+        댓글 <span className="comments-card-count">{comments?.length ?? ''}</span>
+      </span>
+      {top && (
+        <span className="comments-card-top">
+          <span className="avatar tiny" style={{ background: top.authorColor }}>{top.author.replace('@', '')[0]}</span>
+          <span className="comments-card-text">{top.text}</span>
+        </span>
+      )}
     </button>
   );
 }
