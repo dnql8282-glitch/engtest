@@ -60,7 +60,7 @@ src/
 - 서버를 붙일 때는 서비스 층 안쪽만 바꾸면 되고, 모바일로 옮길 때는 화면 층만 새로 만들면 돼요.
 - 모든 기능은 **상태 → 요청 → 응답 → 다시 그리기** 흐름으로 동작해요.
 
-단계별 자세한 설명은 [docs/STAGES.md](docs/STAGES.md)에 있어요.
+단계별 자세한 설명은 [docs/STAGES.md](docs/STAGES.md), 요청 진행 상황은 [docs/CHECKLIST.md](docs/CHECKLIST.md)에 있어요.
 
 ## 개발 로드맵
 
