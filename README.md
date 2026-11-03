@@ -16,7 +16,17 @@ npm install          # 저장소 루트에서 한 번
 npm run dev:web      # 웹 앱: http://localhost:5173
 npm test             # core 로직 자동 테스트
 npm run encode       # (선택) 스트리밍용 영상 다시 만들기 — ffmpeg 필요
+npm run storyboard   # (선택) 타임바 미리보기 장면 다시 만들기 — ffmpeg 필요
 ```
+
+### 구글 로그인 설정 (선택)
+
+1. [Google Cloud Console](https://console.cloud.google.com) → API 및 서비스 → 사용자 인증 정보 → **OAuth 클라이언트 ID 만들기** → 유형: 웹 애플리케이션
+2. **승인된 JavaScript 원본**에 `http://localhost:5173` 추가
+3. `apps/web/.env.example`을 `apps/web/.env.local`로 복사하고 `VITE_GOOGLE_CLIENT_ID=발급받은ID` 입력
+4. `npm run dev:web` 다시 실행 → 오른쪽 위 "로그인"
+
+설정하지 않아도 **테스트 계정**으로 계정별 기능(기록·재생목록·이어 보기)을 모두 써 볼 수 있어요.
 
 모바일 앱(아이폰·안드로이드) 실행 방법은 [apps/mobile/README.md](apps/mobile/README.md)에 있어요.
 
@@ -68,7 +78,7 @@ docs/        단계별 설명(STAGES.md), 요청 체크리스트(CHECKLIST.md), 
 - [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
 - [x] **5단계**: 시청 기록, 좋아요/나중에 볼 재생목록, 구독 피드, 인기 급상승, 채널 페이지, 테마 전환
 - [x] **6단계**: iOS·안드로이드 앱 (YouTube iOS 앱 UI, 미니 플레이어, PiP, 백그라운드·잠금 화면 재생) — ⏸ 보류 중
-- [x] **웹 다듬기 W1~W6**: 실제 영상, YouTube 스타일 플레이어·단축키, 웹 미니 플레이어, 모바일 레이아웃, Shorts, 공유·알림·답글, 적응형 스트리밍(AV1/H.264, Opus/AAC 48kHz, 화질 선택)
+- [x] **웹 다듬기 W1~W8**: 계정·구글 로그인·시청 진행선·이어서 보기, 타임바(미리보기·챕터·정밀 탐색·2배속·두 번 탭), 실제 영상, YouTube 스타일 플레이어·단축키, 웹 미니 플레이어, 모바일 레이아웃, Shorts, 공유·알림·답글, 적응형 스트리밍(AV1/H.264, Opus/AAC 48kHz, 화질 선택)
 
 ## 주요 화면과 주소
 

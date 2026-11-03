@@ -1,6 +1,8 @@
 import type { Category, Channel, VideoWithChannel } from './types';
 import { videos } from './data/videos';
 import { channels } from './data/channels';
+import { chapters } from './data/chapters';
+import { storyboards } from './data/storyboards';
 import { searchVideos as runSearch, suggest } from './search';
 
 // "서비스" 계층: 화면은 데이터가 어디서 오는지 몰라도 되게 여기서만 데이터를 다뤄요.
@@ -14,7 +16,7 @@ function withChannel(videoId: string): VideoWithChannel | undefined {
   if (!video) return undefined;
   const channel = channels.find((c) => c.id === video.channelId);
   if (!channel) return undefined;
-  return { ...video, channel };
+  return { ...video, channel, chapters: chapters[video.id] ?? [], storyboard: storyboards[video.id] };
 }
 
 function allWithChannel(): VideoWithChannel[] {

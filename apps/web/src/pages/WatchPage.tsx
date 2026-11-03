@@ -19,6 +19,8 @@ import { Comments } from '../components/Comments';
 import { NotFoundPage } from './NotFoundPage';
 import { playerStore } from '@mytube/core/playerStore';
 import { FullPlayer } from '../player/FullPlayer';
+import { ChapterCards, ChaptersPanel } from '../components/Chapters';
+import { LinkifiedText } from '../components/LinkifiedText';
 import { VideoCard } from '../components/VideoCard';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { ShareDialog } from '../components/ShareDialog';
@@ -40,6 +42,7 @@ export function WatchPage() {
   const [params] = useSearchParams();
   const startAt = Number(params.get('t') ?? 0);
   const [relatedFilter, setRelatedFilter] = useState<'all' | 'channel' | 'related'>('all');
+  const [chaptersOpen, setChaptersOpen] = useState(false);
   useDocumentTitle(video?.title);
 
   // 다른 영상으로 넘어가면 맨 위로 스크롤
@@ -74,14 +77,26 @@ export function WatchPage() {
   if (filterFor !== videoId) {
     setFilterFor(videoId);
     setRelatedFilter('all');
+    setChaptersOpen(false);
   }
 
   if (!loading && video === null) return <NotFoundPage />;
 
   const next = related?.[0];
+  const showChapters = () => {
+    setChaptersOpen(true);
+    // 휴대폰은 패널이 영상 아래에 있어서 그 위치로 스크롤
+    setTimeout(() => document.querySelector('.chapters-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  };
   const player = video ? (
     <div className="player">
-      <FullPlayer key="player" next={next} onNext={() => next && navigate(`/watch/${next.id}`)} />
+      <FullPlayer
+        key="player"
+        video={video}
+        next={next}
+        onNext={() => next && navigate(`/watch/${next.id}`)}
+        onShowChapters={showChapters}
+      />
     </div>
   ) : (
     <div className="player skeleton-block" />
@@ -94,9 +109,10 @@ export function WatchPage() {
       <div className="watch-columns">
         <div className="watch-primary">
           {(!playerPrefs.theater || isMobile) && player}
-          {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} isMobile={isMobile} />}
+          {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} isMobile={isMobile} onShowChapters={showChapters} />}
         </div>
         <aside className="watch-secondary">
+          {video && chaptersOpen && video.chapters.length > 0 && <ChaptersPanel video={video} onClose={() => setChaptersOpen(false)} />}
           {video && (
             <div className="related-chips">
               {(
@@ -131,7 +147,7 @@ export function WatchPage() {
   );
 }
 
-function VideoInfo({ video, isMobile }: { video: VideoWithChannel; isMobile: boolean }) {
+function VideoInfo({ video, isMobile, onShowChapters }: { video: VideoWithChannel; isMobile: boolean; onShowChapters: () => void }) {
   return (
     <>
       <h1 className="watch-title">{video.title}</h1>
@@ -156,13 +172,13 @@ function VideoInfo({ video, isMobile }: { video: VideoWithChannel; isMobile: boo
       </div>
 
       {/* key: 영상이 바뀌면 "더보기" 펼침 상태를 초기화 */}
-      <Description key={video.id} video={video} />
+      <Description key={video.id} video={video} onShowChapters={onShowChapters} />
       {isMobile ? <MobileComments key={video.id} videoId={video.id} /> : <Comments key={video.id} videoId={video.id} />}
     </>
   );
 }
 
-function Description({ video }: { video: VideoWithChannel }) {
+function Description({ video, onShowChapters }: { video: VideoWithChannel; onShowChapters: () => void }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div
@@ -176,7 +192,10 @@ function Description({ video }: { video: VideoWithChannel }) {
         <span className="description-tag">#{video.category}</span>
       </p>
       {/* 접혀 있을 땐 첫 문단만, 펼치면 전체 (라이선스 표기 포함) */}
-      <p className="description-text">{expanded ? video.description : video.description.split('\n\n')[0]}</p>
+      <p className="description-text">
+        <LinkifiedText text={expanded ? video.description : video.description.split('\n\n')[0]} videoId={video.id} />
+      </p>
+      {expanded && <ChapterCards video={video} onShowAll={onShowChapters} />}
       {expanded ? (
         <>
           <div className="description-channel">

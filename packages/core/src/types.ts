@@ -31,9 +31,27 @@ export interface Video {
   stream?: { dash: string; hls: string };
 }
 
-// 화면에서 쓰기 편하도록 영상에 채널 정보를 붙인 형태
+// 화면에서 쓰기 편하도록 영상에 채널·챕터·스토리보드를 붙인 형태
 export interface VideoWithChannel extends Video {
   channel: Channel;
+  chapters: Chapter[];
+  storyboard?: Storyboard;
+}
+
+/** 타임바 미리보기 장면 묶음 (스프라이트 이미지 한 장에 칸들이 바둑판으로) */
+export interface Storyboard {
+  url: string;
+  interval: number; // 몇 초마다 한 칸
+  count: number; // 칸 수
+  cols: number; // 한 줄에 몇 칸
+  w: number; // 칸 너비(px)
+  h: number; // 칸 높이(px)
+}
+
+/** 챕터: 영상을 주제별로 나눈 구간 (시작 시간만 적으면 끝은 다음 챕터 시작) */
+export interface Chapter {
+  start: number; // 초
+  title: string;
 }
 
 export type Rating = 'like' | 'dislike' | null;

@@ -5,7 +5,7 @@ import { searchVideos, suggest, tokenize } from './search';
 const channel = { id: 'c', name: '코딩하는 고양이', subscribers: 1, avatarColor: '#000' };
 const make = (id: string, title: string, description = '', views = 0): VideoWithChannel => ({
   id, title, description, views, channel, channelId: 'c', category: '개발', likes: 0,
-  durationSec: 1, uploadedAt: '', thumbnailUrl: '', thumbnailColors: ['#000', '#000'], videoUrl: '',
+  durationSec: 1, uploadedAt: '', thumbnailUrl: '', thumbnailColors: ['#000', '#000'], videoUrl: '', chapters: [],
 });
 
 const videos = [

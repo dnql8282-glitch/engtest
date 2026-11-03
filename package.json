@@ -12,6 +12,7 @@
     "test": "npm test -w @mytube/core",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "encode": "node tools/encode/encode.mjs",
-    "dev:web:lan": "npm run dev -w @mytube/web -- --host"
+    "dev:web:lan": "npm run dev -w @mytube/web -- --host",
+    "storyboard": "node tools/encode/storyboard.mjs"
   }
 }

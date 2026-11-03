@@ -305,23 +305,74 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .volume-slider::-webkit-slider-thumb { appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
 .volume-slider::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #fff; }
 
-/* 진행 막대 */
-.progress { position: relative; height: 16px; display: flex; align-items: flex-end; cursor: pointer; touch-action: none; }
-.progress-track { position: relative; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.2); transition: height 0.1s; }
-.progress:hover .progress-track, .progress.dragging .progress-track { height: 5px; }
+/* 진행 막대 (타임바) */
+.progress { position: relative; height: 16px; display: flex; align-items: flex-end; cursor: pointer; touch-action: none; outline: none; }
+.progress-segments { position: relative; display: flex; gap: 2px; width: 100%; height: 3px; }
+.progress:not(.has-chapters) .progress-segments { gap: 0; }
+.progress-segment { position: relative; height: 100%; background: rgba(255, 255, 255, 0.2); transition: transform 0.1s; transform-origin: bottom; }
+/* 마우스가 올라가면 막대가 두꺼워지고, 챕터가 있으면 그 구간만 더 두껍게 */
+.progress:hover .progress-segment, .progress.dragging .progress-segment { transform: scaleY(1.67); }
+.progress.has-chapters:hover .progress-segment.hover, .progress.has-chapters.dragging .progress-segment.hover { transform: scaleY(2.6); }
 .progress-buffered, .progress-hover, .progress-played { position: absolute; left: 0; top: 0; bottom: 0; }
 .progress-buffered { background: rgba(255, 255, 255, 0.4); }
 .progress-hover { background: rgba(255, 255, 255, 0.5); }
 .progress-played { background: #f00; }
 .progress-scrubber {
-  position: absolute; bottom: -4px; width: 13px; height: 13px; margin-left: -6.5px; border-radius: 50%;
-  background: #f00; transform: scale(0); transition: transform 0.1s;
+  position: absolute; bottom: -5px; width: 13px; height: 13px; margin-left: -6.5px; border-radius: 50%;
+  background: #f00; transform: scale(0); transition: transform 0.12s; pointer-events: none;
 }
-.progress:hover .progress-scrubber, .progress.dragging .progress-scrubber { transform: scale(1); bottom: -4px; }
-.progress-tooltip {
-  position: absolute; bottom: 22px; transform: translateX(-50%); padding: 3px 8px; border-radius: 4px;
-  background: rgba(28, 28, 28, 0.9); font-size: 12px; font-weight: 500; pointer-events: none;
+.progress:hover .progress-scrubber, .progress:focus-visible .progress-scrubber { transform: scale(1); }
+/* 손잡이를 누르고 있으면 크게 (휴대폰에서 잡기 쉽게) */
+.progress.dragging .progress-scrubber { transform: scale(1.5); }
+.progress.precise .progress-scrubber { transform: scale(1.8); box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.3); }
+
+/* 미리보기: 장면 + 챕터 제목 + 시간 */
+.progress-preview {
+  position: absolute; bottom: 26px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px;
+  pointer-events: none; text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
+.storyboard-frame { background-color: #000; background-repeat: no-repeat; border: 2px solid #fff; border-radius: 8px; flex-shrink: 0; }
+.progress-preview-chapter { max-width: 168px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 500; }
+.progress-preview-time { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.progress.dragging .progress-preview-time { font-size: 18px; }
+
+/* 가장 많이 다시 본 장면 그래프 */
+.heatmap { position: absolute; left: 0; right: 0; bottom: 6px; width: 100%; height: 40px; pointer-events: none; }
+.heatmap polygon { fill: rgba(255, 255, 255, 0.25); }
+
+/* 정밀 탐색: 장면 필름 띠 */
+.filmstrip {
+  position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.75); pointer-events: none; max-width: 100%;
+}
+.filmstrip-label { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.filmstrip-row { display: flex; gap: 4px; }
+.filmstrip-cell { opacity: 0.55; }
+.filmstrip-cell .storyboard-frame { border-width: 1px; border-radius: 4px; }
+.filmstrip-cell.current { opacity: 1; transform: scale(1.12); }
+.filmstrip-cell.current .storyboard-frame { border: 2px solid #f00; }
+.filmstrip-hint { color: #bbb; font-size: 11px; }
+
+/* 시간 옆 챕터 이름 */
+.player-time.scrubbing { color: #fff; font-weight: 500; }
+.chapter-chip { display: flex; align-items: center; gap: 4px; max-width: 260px; height: 32px; padding: 0 4px 0 6px; border-radius: 16px; color: #ddd; font-size: 13px; white-space: nowrap; overflow: hidden; }
+.chapter-chip:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.chapter-dot { color: #aaa; }
+
+/* 길게 눌러 2배속 */
+.speed-boost {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%); padding: 6px 14px; border-radius: 16px;
+  background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 14px; font-weight: 500; pointer-events: none;
+}
+/* 두 번 탭 건너뛰기 표시 (반원 물결) */
+.seek-ripple {
+  position: absolute; top: 0; bottom: 0; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: rgba(255, 255, 255, 0.15); color: #fff; font-size: 13px; font-weight: 500; pointer-events: none;
+  animation: ripple-fade 0.7s ease-out forwards;
+}
+.seek-ripple.left { left: 0; border-radius: 0 50% 50% 0 / 0 50% 50% 0; }
+.seek-ripple.right { right: 0; border-radius: 50% 0 0 50% / 50% 0 0 50%; }
+@keyframes ripple-fade { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
 
 /* 자동재생 스위치 */
 .autoplay-toggle { position: relative; width: 36px; height: 14px; margin: 0 12px; border-radius: 7px; background: rgba(255, 255, 255, 0.3); }
@@ -625,6 +676,33 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .notif-time { color: var(--text-sub); font-size: 12px; }
 .notif-thumb { width: 86px; aspect-ratio: 16 / 9; border-radius: 4px; object-fit: cover; }
 
+/* 설명란·댓글 속 시간 링크 */
+.timestamp-link { color: var(--link); font: inherit; }
+.timestamp-link:hover { text-decoration: underline; }
+.timestamp-link.as-text { font-size: 12px; }
+
+/* 설명란 챕터 카드 */
+.chapter-cards { margin-top: 16px; }
+.chapter-cards-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 16px; }
+.chapter-cards-row { display: grid; grid-auto-flow: column; grid-auto-columns: 168px; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+.chapter-card { display: flex; flex-direction: column; gap: 4px; padding: 4px; border-radius: 8px; text-align: left; }
+.chapter-card:hover, .chapter-card.current { background: var(--surface-hover); }
+.chapter-card .storyboard-frame { border: 0; }
+.chapter-card-title { font-size: 13px; font-weight: 500; line-height: 18px; }
+.chapter-card-time { color: var(--link); font-size: 12px; }
+
+/* 오른쪽 챕터 패널 */
+.chapters-panel { margin-bottom: 12px; border: 1px solid var(--divider); border-radius: 12px; overflow: hidden; }
+.chapters-panel-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 16px; border-bottom: 1px solid var(--divider); }
+.chapters-panel-head h2 { margin: 0; font-size: 18px; }
+.chapters-panel-list { max-height: 420px; overflow-y: auto; }
+.chapters-panel-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 16px; text-align: left; }
+.chapters-panel-item:hover { background: var(--surface); }
+.chapters-panel-item.current { background: var(--surface-hover); }
+.chapters-panel-item .storyboard-frame { border: 0; border-radius: 4px; }
+.chapters-panel-text { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.chapters-panel-text b { font-weight: 500; }
+
 /* 썸네일 미리보기 */
 .thumbnail-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
@@ -803,6 +881,9 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
   .channel-sort { padding: 12px 12px 0; }
   .channel-about { padding: 16px 12px; }
   .related-chips { padding: 0 0 4px; }
+
+  .progress { height: 24px; }
+  .chapter-chip { max-width: 130px; }
 
   /* 휴대폰 플레이어: 볼륨(기기 버튼 사용)·미니·영화관 버튼은 숨기고 꼭 필요한 것만 */
   .yt-player:not(.is-fullscreen) .volume,

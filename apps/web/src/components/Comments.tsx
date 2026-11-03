@@ -7,6 +7,7 @@ import { useAsync } from '@mytube/hooks/useAsync';
 import { useUserState } from '@mytube/hooks/useUserStore';
 import { Icon } from './Icon';
 import { Menu } from './Menu';
+import { LinkifiedText } from './LinkifiedText';
 import { AccountAvatar } from './AccountAvatar';
 
 // 댓글 영역: 댓글 수 + 정렬 메뉴, 입력창, 댓글과 답글
@@ -191,7 +192,9 @@ function CommentItem({
           <span className="comment-author">{comment.author}</span>
           <span className="comment-time">{formatRelativeTime(comment.createdAt)}</span>
         </p>
-        <p className="comment-text">{comment.text}</p>
+        <p className="comment-text">
+          <LinkifiedText text={comment.text} videoId={comment.videoId} />
+        </p>
         <div className="comment-actions">
           <button
             className="icon-btn small"
