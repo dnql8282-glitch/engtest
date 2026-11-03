@@ -63,3 +63,40 @@ export async function searchVideos(query: string): Promise<VideoWithChannel[]> {
 export async function getSuggestions(query: string): Promise<string[]> {
   return suggest(allWithChannel(), query);
 }
+
+/** 인기 급상승: 조회수 순 */
+export async function getTrending(): Promise<VideoWithChannel[]> {
+  await delay(200);
+  return allWithChannel().sort((a, b) => b.views - a.views);
+}
+
+/** 여러 채널의 영상을 최신순으로 (구독 피드). 키는 "c1,c2" 형태 문자열 */
+export async function getFeedForChannels(channelIdsKey: string): Promise<VideoWithChannel[]> {
+  await delay(200);
+  const ids = channelIdsKey ? channelIdsKey.split(',') : [];
+  return allWithChannel()
+    .filter((v) => ids.includes(v.channelId))
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+}
+
+/** ID 목록 순서 그대로 영상들을 돌려줘요 (시청 기록, 재생목록). 키는 "v1,v2" 형태 */
+export async function getVideosByIds(videoIdsKey: string): Promise<VideoWithChannel[]> {
+  await delay(150);
+  const ids = videoIdsKey ? videoIdsKey.split(',') : [];
+  return ids.map((id) => withChannel(id)).filter((v): v is VideoWithChannel => v !== undefined);
+}
+
+export interface ChannelPageData {
+  channel: Channel;
+  videos: VideoWithChannel[];
+}
+
+export async function getChannelPage(channelId: string): Promise<ChannelPageData | null> {
+  await delay(200);
+  const channel = channels.find((c) => c.id === channelId);
+  if (!channel) return null;
+  const list = allWithChannel()
+    .filter((v) => v.channelId === channelId)
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+  return { channel, videos: list };
+}

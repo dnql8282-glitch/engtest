@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { getChannels } from '../../core/videoService';
 import { useAsync } from '../hooks/useAsync';
 import { useUserState } from '../hooks/useUserStore';
@@ -21,34 +21,40 @@ interface NavItem {
   to: string;
 }
 
+// 메뉴 항목 = 아이콘 + 이름 + 이동할 주소. 데이터로 정의해 두면 펼침/미니 메뉴가 같은 목록을 써요.
 const mainItems: NavItem[] = [
   { icon: 'home', label: '홈', to: '/' },
-  { icon: 'fire', label: '인기 급상승', to: '/' },
-  { icon: 'subscriptions', label: '구독', to: '/' },
+  { icon: 'fire', label: '인기 급상승', to: '/feed/trending' },
+  { icon: 'subscriptions', label: '구독', to: '/feed/subscriptions' },
 ];
 const youItems: NavItem[] = [
-  { icon: 'history', label: '시청 기록', to: '/' },
-  { icon: 'playlist', label: '재생목록', to: '/' },
-  { icon: 'clock', label: '나중에 볼 동영상', to: '/' },
-  { icon: 'thumbUp', label: '좋아요 표시한 동영상', to: '/' },
+  { icon: 'history', label: '시청 기록', to: '/feed/history' },
+  { icon: 'clock', label: '나중에 볼 동영상', to: '/playlist?list=WL' },
+  { icon: 'thumbUp', label: '좋아요 표시한 동영상', to: '/playlist?list=LL' },
 ];
 const exploreItems: NavItem[] = [
-  { icon: 'music', label: '음악', to: '/' },
-  { icon: 'game', label: '게임', to: '/' },
-  { icon: 'trophy', label: '스포츠', to: '/' },
+  { icon: 'music', label: '음악', to: '/?category=음악' },
+  { icon: 'game', label: '게임', to: '/?category=게임' },
+  { icon: 'trophy', label: '스포츠', to: '/?category=스포츠' },
 ];
+const miniItems: NavItem[] = [...mainItems, { icon: 'history', label: '나', to: '/feed/history' }];
 
 export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps) {
+  const { pathname, search } = useLocation();
   const { data: channels = [] } = useAsync(getChannels, 'all');
   const { subscriptions } = useUserState();
   // 전역 상태의 구독 ID 목록으로 채널을 골라요. 시청 페이지에서 구독하면 여기도 바로 바뀌어요.
   const subs = channels.filter((c) => subscriptions.includes(c.id));
 
+  // 현재 주소와 메뉴 주소가 같으면 강조 표시
+  const current = decodeURIComponent(pathname + search);
+  const isActive = (to: string) => current === to;
+
   if (variant === 'mini') {
     return (
       <nav className="mini-guide">
-        {[...mainItems, { icon: 'history', label: '나', to: '/' } as NavItem].map((item, i) => (
-          <Link key={item.label} to={item.to} className={`mini-item ${i === 0 ? 'active' : ''}`}>
+        {miniItems.map((item) => (
+          <Link key={item.label} to={item.to} className={`mini-item ${isActive(item.to) ? 'active' : ''}`}>
             <Icon name={item.icon} />
             <span>{item.label}</span>
           </Link>
@@ -57,8 +63,13 @@ export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps
     );
   }
 
-  const link = (item: NavItem, active = false) => (
-    <Link key={item.label} to={item.to} className={`guide-item ${active ? 'active' : ''}`} onClick={onClose}>
+  const link = (item: NavItem) => (
+    <Link
+      key={item.label}
+      to={item.to}
+      className={`guide-item ${isActive(item.to) ? 'active' : ''}`}
+      onClick={onClose}
+    >
       <Icon name={item.icon} />
       <span className="guide-label">{item.label}</span>
     </Link>
@@ -74,29 +85,36 @@ export function Sidebar({ variant, drawerOpen, onClose, onToggle }: SidebarProps
           <Logo />
         </div>
       )}
-      <section className="guide-section">{mainItems.map((item, i) => link(item, i === 0))}</section>
+      <section className="guide-section">{mainItems.map(link)}</section>
 
       <section className="guide-section">
-        <Link to="/" className="guide-title" onClick={onClose}>
+        <Link to="/feed/history" className="guide-title" onClick={onClose}>
           나 <Icon name="chevronRight" size={20} />
         </Link>
-        {youItems.map((item) => link(item))}
+        {youItems.map(link)}
       </section>
 
       <section className="guide-section">
-        <h3 className="guide-title">구독</h3>
+        <Link to="/feed/subscriptions" className="guide-title" onClick={onClose}>
+          구독 <Icon name="chevronRight" size={20} />
+        </Link>
         {subs.length === 0 && <p className="guide-empty">구독한 채널이 없습니다.</p>}
         {subs.map((c) => (
-          <Link key={c.id} to="/" className="guide-item" onClick={onClose}>
-            <span className="avatar tiny" style={{ background: c.avatarColor }}>{c.name[0]}</span>
-            <span className="guide-label">{c.name}</span>
-          </Link>
+            <Link
+              key={c.id}
+              to={`/channel/${c.id}`}
+              className={`guide-item ${isActive(`/channel/${c.id}`) ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <span className="avatar tiny" style={{ background: c.avatarColor }}>{c.name[0]}</span>
+              <span className="guide-label">{c.name}</span>
+            </Link>
         ))}
       </section>
 
       <section className="guide-section">
         <h3 className="guide-title">탐색</h3>
-        {exploreItems.map((item) => link(item))}
+        {exploreItems.map(link)}
       </section>
 
       <footer className="guide-footer">

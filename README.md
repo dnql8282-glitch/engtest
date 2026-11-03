@@ -2,7 +2,9 @@
 
 YouTube 웹사이트처럼 동작하는 영상 앱을 **서버 없이** 만들어 보는 학습 프로젝트예요.
 
-![데스크톱 화면](docs/screenshot-desktop.jpg)
+![홈 화면](docs/screenshot-desktop.jpg)
+
+![시청 페이지](docs/screenshot-watch.jpg)
 
 <img src="docs/screenshot-mobile.jpg" width="240" alt="모바일 화면" />
 
@@ -31,7 +33,8 @@ src/
     commentService.ts 댓글 읽기/쓰기
     search.ts         검색 규칙
     storage.ts        저장소 약속(인터페이스) — 플랫폼이 실제 저장소를 끼워 넣음
-    userStore.ts      전역 상태 (구독, 좋아요)
+    history.ts        시청 기록 날짜별 묶기
+    userStore.ts      전역 상태 (구독, 좋아요, 시청 기록, 나중에 볼, 테마)
     data/             가짜(mock) 데이터
   web/                ← 웹 전용 화면 (React DOM)
     components/       Header, Sidebar, VideoCard, Comments ...
@@ -66,11 +69,25 @@ src/
 - [x] **2단계**: 영상 시청 페이지 (라우팅, 비디오 플레이어, 추천 영상 목록)
 - [x] **3단계**: 검색 기능 (자동완성, 결과 페이지, 테스트)
 - [x] **4단계**: 좋아요, 댓글, 구독 (저장소 추상화 + 전역 상태)
-- [ ] **5단계**: 시청 기록, 보관함, 다크 모드 토글
+- [x] **5단계**: 시청 기록, 좋아요/나중에 볼 재생목록, 구독 피드, 인기 급상승, 채널 페이지, 테마 전환
+
+## 주요 화면과 주소
+
+| 주소 | 화면 |
+|---|---|
+| `/` , `/?category=게임` | 홈 (카테고리) |
+| `/watch/v1` | 시청 페이지 (구독, 좋아요, 댓글) |
+| `/results?search_query=요리` | 검색 결과 |
+| `/feed/trending` · `/feed/subscriptions` · `/feed/history` | 인기 급상승 · 구독 · 시청 기록 |
+| `/playlist?list=LL` · `/playlist?list=WL` | 좋아요 표시한 동영상 · 나중에 볼 동영상 |
+| `/channel/c1` | 채널 페이지 |
+
+사용자 데이터(구독, 좋아요, 댓글, 기록, 테마)는 브라우저 localStorage에 저장돼요. 서버는 없어요.
 
 ## 데이터 출처
 
 - 영상: test-videos.co.uk의 오픈 라이선스 샘플 영상 (Big Buck Bunny, Sintel 등)
 - 썸네일: picsum.photos 무료 사진
+- 샘플 영상은 실제로는 10초짜리예요. 카드에 표시되는 재생 시간은 가짜 데이터예요.
 - 아이콘: Google Material Icons (Apache 2.0)
 - 로고와 이름(MyTube)은 YouTube 상표와 구분되도록 따로 만들었어요.

@@ -8,15 +8,36 @@ import { readJson, writeJson } from './storage';
 // React를 쓰지 않는 순수 TypeScript라서 모바일 앱에서도 그대로 쓸 수 있어요.
 // 화면은 subscribe()로 "바뀌면 알려줘"라고 등록하고, getSnapshot()으로 현재 값을 읽어요.
 
+export interface HistoryEntry {
+  videoId: string;
+  watchedAt: string; // ISO 날짜
+}
+
+export type Theme = 'dark' | 'light';
+
 export interface UserState {
   loaded: boolean;
   subscriptions: string[]; // 채널 ID 목록
   ratings: Record<string, Rating>; // 영상 ID → 좋아요/싫어요
+  history: HistoryEntry[]; // 최근 본 영상이 앞에
+  watchLater: string[]; // 나중에 볼 영상 ID (최근에 넣은 것이 앞에)
+  theme: Theme;
 }
+
+const MAX_HISTORY = 200;
 
 const DEFAULT_SUBSCRIPTIONS = ['c1', 'c2', 'c5']; // 처음 실행할 때 기본 구독
 
-let state: UserState = { loaded: false, subscriptions: [], ratings: {} };
+const INITIAL: UserState = {
+  loaded: false,
+  subscriptions: [],
+  ratings: {},
+  history: [],
+  watchLater: [],
+  theme: 'dark',
+};
+
+let state: UserState = INITIAL;
 const listeners = new Set<() => void>();
 
 function setState(next: Partial<UserState>) {
@@ -37,11 +58,14 @@ export const userStore = {
 
   /** 앱 시작 시 저장된 데이터를 불러와요 */
   async init() {
-    const [subscriptions, ratings] = await Promise.all([
+    const [subscriptions, ratings, history, watchLater, theme] = await Promise.all([
       readJson<string[]>('subscriptions', DEFAULT_SUBSCRIPTIONS),
       readJson<Record<string, Rating>>('ratings', {}),
+      readJson<HistoryEntry[]>('history', []),
+      readJson<string[]>('watchLater', []),
+      readJson<Theme>('theme', 'dark'),
     ]);
-    setState({ loaded: true, subscriptions, ratings });
+    setState({ loaded: true, subscriptions, ratings, history, watchLater, theme });
   },
 
   isSubscribed(channelId: string) {
@@ -63,10 +87,51 @@ export const userStore = {
     setState({ ratings });
     void writeJson('ratings', ratings);
   },
+
+  /** 시청 기록 추가. 같은 영상을 다시 보면 맨 앞으로 옮겨요. */
+  recordWatch(videoId: string, now: Date = new Date()) {
+    const history = [
+      { videoId, watchedAt: now.toISOString() },
+      ...state.history.filter((h) => h.videoId !== videoId),
+    ].slice(0, MAX_HISTORY);
+    setState({ history });
+    void writeJson('history', history);
+  },
+
+  removeFromHistory(videoId: string) {
+    const history = state.history.filter((h) => h.videoId !== videoId);
+    setState({ history });
+    void writeJson('history', history);
+  },
+
+  clearHistory() {
+    setState({ history: [] });
+    void writeJson('history', []);
+  },
+
+  toggleWatchLater(videoId: string) {
+    const watchLater = state.watchLater.includes(videoId)
+      ? state.watchLater.filter((id) => id !== videoId)
+      : [videoId, ...state.watchLater];
+    setState({ watchLater });
+    void writeJson('watchLater', watchLater);
+  },
+
+  setTheme(theme: Theme) {
+    setState({ theme });
+    void writeJson('theme', theme);
+  },
 };
+
+/** 좋아요 누른 영상 ID 목록 (파생 데이터: ratings에서 계산) */
+export function likedVideoIds(s: UserState): string[] {
+  return Object.entries(s.ratings)
+    .filter(([, r]) => r === 'like')
+    .map(([id]) => id);
+}
 
 /** 테스트용: 상태를 처음으로 되돌려요 */
 export function resetUserStoreForTest() {
-  state = { loaded: false, subscriptions: [], ratings: {} };
+  state = INITIAL;
   listeners.clear();
 }

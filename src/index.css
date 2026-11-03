@@ -1,17 +1,28 @@
 /* =========================================================
-   디자인 토큰: YouTube 다크 모드 색상과 크기
+   디자인 토큰: 색상과 크기
+   컴포넌트는 색을 직접 쓰지 않고 아래 변수 이름만 써요.
+   <html data-theme="light"> 가 되면 변수 값만 바뀌어서 앱 전체 색이 바뀌어요.
    ========================================================= */
 :root {
+  /* 어두운 테마 (기본) */
   --bg: #0f0f0f;                       /* 페이지 배경 */
   --text: #f1f1f1;                     /* 기본 글자 */
   --text-sub: #aaaaaa;                 /* 보조 글자(채널명, 조회수) */
+  --text-muted: #717171;               /* 더 흐린 글자 */
   --surface: rgba(255, 255, 255, 0.1); /* 칩, 버튼 배경 */
   --surface-hover: rgba(255, 255, 255, 0.2);
   --divider: rgba(255, 255, 255, 0.2);
   --search-bg: #121212;
   --search-btn-bg: #222222;
+  --search-btn-hover: #303030;
   --search-border: #303030;
+  --popup-bg: #212121;                 /* 자동완성, 메뉴 팝업 */
+  --popup-hover: #3d3d3d;
+  --invert-hover: #d9d9d9;             /* 흰 버튼(구독) 호버 */
+  --link: #3ea6ff;
+  --danger: #ff6b6b;
   --brand: #ff0033;
+  color-scheme: dark;
 
   --header-h: 56px;
   --guide-w: 240px;
@@ -20,7 +31,27 @@
   font-family: 'Roboto', 'Noto Sans KR', Arial, sans-serif;
   color: var(--text);
   background: var(--bg);
-  color-scheme: dark;
+}
+
+/* 밝은 테마: 같은 변수 이름에 다른 값 */
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --text: #0f0f0f;
+  --text-sub: #606060;
+  --text-muted: #909090;
+  --surface: rgba(0, 0, 0, 0.05);
+  --surface-hover: rgba(0, 0, 0, 0.1);
+  --divider: rgba(0, 0, 0, 0.1);
+  --search-bg: #ffffff;
+  --search-btn-bg: #f8f8f8;
+  --search-btn-hover: #f0f0f0;
+  --search-border: #d3d3d3;
+  --popup-bg: #ffffff;
+  --popup-hover: #f2f2f2;
+  --invert-hover: #272727;
+  --link: #065fd4;
+  --danger: #cc0000;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -77,21 +108,21 @@ h3, p { margin: 0; }
   width: 100%; border: 0; outline: 0; background: none;
   color: var(--text); font: inherit; font-size: 16px;
 }
-.search-input::placeholder { color: #888; }
+.search-input::placeholder { color: var(--text-muted); }
 .search-clear { width: 36px; height: 36px; }
 .search-btn {
   display: grid; place-items: center; width: 64px;
   border: 1px solid var(--search-border); border-radius: 0 40px 40px 0;
   background: var(--search-btn-bg);
 }
-.search-btn:hover { background: #303030; }
+.search-btn:hover { background: var(--search-btn-hover); }
 .suggestions {
   position: absolute; top: calc(100% + 4px); left: 0; right: -64px; z-index: 150;
   margin: 0; padding: 16px 0; list-style: none;
-  border-radius: 12px; background: #212121; box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px; background: var(--popup-bg); box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);
 }
 .suggestions li { display: flex; align-items: center; gap: 16px; height: 32px; padding: 0 16px; font-size: 16px; font-weight: 500; cursor: default; }
-.suggestions li:hover, .suggestions li.highlighted { background: #3d3d3d; }
+.suggestions li:hover, .suggestions li.highlighted { background: var(--popup-hover); }
 .mobile-back, .mobile-search-btn { display: none; }
 
 .header-end { display: flex; align-items: center; gap: 8px; }
@@ -111,7 +142,7 @@ h3, p { margin: 0; }
   width: var(--guide-w); overflow-y: auto; background: var(--bg);
   scrollbar-width: thin; scrollbar-color: transparent transparent;
 }
-.guide:hover { scrollbar-color: #717171 transparent; }
+.guide:hover { scrollbar-color: var(--text-muted) transparent; }
 .guide-section { padding: 12px; border-bottom: 1px solid var(--divider); }
 .guide-item {
   display: flex; align-items: center; gap: 24px;
@@ -127,7 +158,7 @@ h3, p { margin: 0; }
   font-size: 16px; font-weight: 700;
 }
 a.guide-title:hover { background: var(--surface); border-radius: 10px; }
-.guide-footer { padding: 16px 24px; color: #717171; font-size: 12px; line-height: 18px; }
+.guide-footer { padding: 16px 24px; color: var(--text-muted); font-size: 12px; line-height: 18px; }
 
 .mini-guide {
   position: fixed; top: var(--header-h); bottom: 0; left: 0; z-index: 50;
@@ -227,13 +258,13 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .watch-owner-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
 .owner { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .owner-text { min-width: 0; margin-right: 12px; }
-.owner-name { font-size: 16px; font-weight: 500; line-height: 22px; }
+.owner-name { display: block; font-size: 16px; font-weight: 500; line-height: 22px; }
 .owner-subs { color: var(--text-sub); font-size: 12px; line-height: 18px; }
 .subscribe-btn {
   height: 36px; padding: 0 16px; border-radius: 18px;
   background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500;
 }
-.subscribe-btn:hover { background: #d9d9d9; }
+.subscribe-btn:hover { background: var(--invert-hover); }
 .subscribe-btn { display: inline-flex; align-items: center; gap: 6px; }
 .subscribe-btn.subscribed { background: var(--surface); color: var(--text); }
 .subscribe-btn.subscribed:hover { background: var(--surface-hover); }
@@ -246,7 +277,7 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .description:not(.expanded):hover { background: var(--surface-hover); }
 .description.expanded { cursor: default; }
 .description-meta { font-weight: 500; white-space: pre; }
-.description-tag { margin-left: 8px; color: #3ea6ff; }
+.description-tag { margin-left: 8px; color: var(--link); }
 .description-text { white-space: pre-wrap; }
 .description:not(.expanded) .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .description-channel { display: flex; align-items: center; gap: 12px; margin: 24px 0 12px; }
@@ -276,7 +307,7 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .comment-form { margin-bottom: 32px; }
 .comment-form-body, .comment-body { flex: 1; min-width: 0; }
 .comment-input {
-  width: 100%; padding: 4px 0; border: 0; border-bottom: 1px solid #717171;
+  width: 100%; padding: 4px 0; border: 0; border-bottom: 1px solid var(--text-muted);
   outline: 0; background: none; color: var(--text); font: inherit; font-size: 14px;
 }
 .comment-input:focus { border-bottom: 2px solid var(--text); padding-bottom: 3px; }
@@ -284,9 +315,9 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .text-btn { height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; font-weight: 500; }
 .text-btn:hover { background: var(--surface); }
 .text-btn.small { height: 32px; padding: 0 12px; font-size: 12px; }
-.text-btn.danger { color: #ff6b6b; }
-.primary-btn { height: 36px; padding: 0 16px; border-radius: 18px; background: #3ea6ff; color: #0f0f0f; font-size: 14px; font-weight: 500; }
-.primary-btn:disabled { background: var(--surface); color: #717171; cursor: default; }
+.text-btn.danger { color: var(--danger); }
+.primary-btn { height: 36px; padding: 0 16px; border-radius: 18px; background: var(--link); color: var(--bg); font-size: 14px; font-weight: 500; }
+.primary-btn:disabled { background: var(--surface); color: var(--text-muted); cursor: default; }
 .comment-head { display: flex; gap: 4px; font-size: 12px; line-height: 18px; margin-bottom: 2px; }
 .comment-author { font-weight: 500; }
 .comment-time { color: var(--text-sub); }
@@ -309,6 +340,79 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
 .result-meta { color: var(--text-sub); font-size: 12px; line-height: 18px; }
 .result-channel { display: flex; align-items: center; gap: 8px; padding: 12px 0; color: var(--text-sub); font-size: 12px; }
 .result-desc { color: var(--text-sub); font-size: 12px; line-height: 18px; }
+
+/* =========================================================
+   팝업 메뉴
+   ========================================================= */
+.menu-anchor { position: relative; }
+.menu-popup {
+  position: absolute; top: calc(100% + 4px); z-index: 160; min-width: 240px;
+  margin: 0; padding: 8px 0; list-style: none;
+  border-radius: 12px; background: var(--popup-bg); box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+}
+.menu-popup.right { right: 0; }
+.menu-popup.left { left: 0; }
+.menu-popup button { display: flex; align-items: center; gap: 16px; width: 100%; height: 36px; padding: 0 16px; font-size: 14px; text-align: left; white-space: nowrap; }
+.menu-popup button:hover { background: var(--popup-hover); }
+.card-menu[aria-expanded='true'] { opacity: 1; }
+.channel-link { display: block; }
+.result-meta .channel-link { display: inline; }
+.history .result-thumb { flex: 0 0 246px; min-width: 0; }
+.history .result-title { font-size: 16px; font-weight: 500; line-height: 22px; }
+.channel-link:hover { color: var(--text); }
+
+/* =========================================================
+   목록형 페이지 공통 (인기 급상승, 시청 기록, 재생목록)
+   ========================================================= */
+.page-title { display: flex; align-items: center; gap: 16px; margin: 8px 0 16px; font-size: 28px; font-weight: 700; }
+.page-title.padded { margin: 16px 24px 0; font-size: 16px; }
+.page-title-icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: #fff; }
+.page-title-icon.trending { background: linear-gradient(135deg, #ff0033, #ff7a00); }
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.group-title { margin: 16px 0 8px; font-size: 20px; font-weight: 700; }
+.history-group { display: flex; flex-direction: column; gap: 16px; }
+.list-index { align-self: center; width: 24px; flex-shrink: 0; color: var(--text-sub); font-size: 14px; text-align: center; }
+.result-actions { display: flex; align-items: flex-start; gap: 4px; }
+.result-row.compact .result-thumb { flex: 0 0 160px; min-width: 0; }
+.result-row.compact .thumbnail { border-radius: 8px; }
+.result-row.compact .result-title { font-size: 16px; font-weight: 500; line-height: 22px; }
+.result-row.compact .card-menu { opacity: 1; }
+
+/* 재생목록: 왼쪽 큰 헤더 + 오른쪽 목록 */
+.playlist { display: flex; gap: 24px; padding: 24px; }
+.playlist-header {
+  position: sticky; top: calc(var(--header-h) + 24px); align-self: flex-start;
+  width: 360px; flex-shrink: 0; border-radius: 16px; overflow: hidden;
+  background: #444 center / cover;
+}
+.playlist-header-inner {
+  padding: 24px; color: #fff;
+  background: linear-gradient(to bottom, rgba(40, 40, 40, 0.7), rgba(15, 15, 15, 0.95));
+  backdrop-filter: blur(40px);
+}
+.playlist-cover { aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; }
+.playlist-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.playlist-title { margin: 24px 0 16px; font-size: 28px; font-weight: 700; line-height: 38px; }
+.playlist-owner { font-size: 14px; font-weight: 500; }
+.playlist-meta { margin-top: 4px; color: rgba(255, 255, 255, 0.7); font-size: 12px; }
+.playlist-items { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* 채널 페이지 */
+.channel-page { max-width: 1284px; margin: 0 auto; padding: 0 24px; }
+.channel-banner { height: 172px; margin-top: 16px; border-radius: 16px; background: var(--surface); }
+.channel-head { display: flex; align-items: center; gap: 24px; padding: 24px 0; }
+.avatar.huge { width: 160px; height: 160px; font-size: 64px; }
+.channel-name { margin: 0 0 8px; font-size: 36px; font-weight: 700; }
+.channel-meta { margin-bottom: 12px; color: var(--text-sub); font-size: 14px; }
+.channel-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--divider); }
+.channel-tab { padding: 12px 0; font-size: 16px; font-weight: 500; color: var(--text-sub); }
+.channel-tab.active { color: var(--text); border-bottom: 2px solid var(--text); }
+.channel-page .grid { padding: 24px 0; }
+
+@media (max-width: 1016px) {
+  .playlist { flex-direction: column; }
+  .playlist-header { position: static; width: auto; }
+}
 
 /* 폭이 좁으면 추천 목록을 영상 아래로 */
 @media (max-width: 1016px) {
@@ -352,8 +456,21 @@ a.guide-title:hover { background: var(--surface); border-radius: 10px; }
   .suggestions { position: fixed; top: var(--header-h); left: 0; right: 0; border-radius: 0; }
   .results { padding: 0 0 16px; }
   .result-row { flex-direction: column; gap: 12px; }
-  .result-thumb { width: 100%; max-width: none; }
+  .result-thumb, .history .result-thumb { width: 100%; max-width: none; flex: none; }
   .result-thumb .thumbnail { border-radius: 0; }
   .result-text { padding: 0 12px; }
   .result-desc { display: none; }
+  .result-row.compact { flex-direction: row; padding: 0 12px; }
+  .result-row.compact .result-text { padding: 0; }
+  .list-index { display: none; }
+  .page-title, .page-head { padding: 0 12px; }
+  .history-group .group-title { padding: 0 12px; }
+  .playlist { padding: 0 0 16px; }
+  .playlist-header { border-radius: 0; }
+  .channel-page { padding: 0; }
+  .channel-banner { border-radius: 0; margin-top: 0; height: 100px; }
+  .channel-head { padding: 16px 12px; gap: 16px; }
+  .avatar.huge { width: 72px; height: 72px; font-size: 28px; }
+  .channel-name { font-size: 24px; }
+  .channel-tabs { padding: 0 12px; }
 }

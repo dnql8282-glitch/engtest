@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import type { VideoWithChannel } from '../../core/types';
 import { getRelatedVideos, getVideo } from '../../core/videoService';
 import {
@@ -9,6 +9,8 @@ import {
   formatRelativeTime,
 } from '../../core/format';
 import { useAsync } from '../hooks/useAsync';
+import { useUserState } from '../hooks/useUserStore';
+import { userStore } from '../../core/userStore';
 import { Icon } from '../components/Icon';
 import { CompactVideoCard } from '../components/CompactVideoCard';
 import { SubscribeButton } from '../components/SubscribeButton';
@@ -27,6 +29,11 @@ export function WatchPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [videoId]);
+
+  // 영상을 불러오면 시청 기록에 남겨요 (전역 상태 → 저장소)
+  useEffect(() => {
+    if (video) userStore.recordWatch(video.id);
+  }, [video]);
 
   if (!loading && video === null) return <NotFoundPage />;
 
@@ -53,11 +60,11 @@ function VideoInfo({ video }: { video: VideoWithChannel }) {
 
       <div className="watch-owner-row">
         <div className="owner">
-          <span className="avatar large" style={{ background: video.channel.avatarColor }}>
+          <Link to={`/channel/${video.channel.id}`} className="avatar large" style={{ background: video.channel.avatarColor }}>
             {video.channel.name[0]}
-          </span>
+          </Link>
           <div className="owner-text">
-            <p className="owner-name">{video.channel.name}</p>
+            <Link to={`/channel/${video.channel.id}`} className="owner-name">{video.channel.name}</Link>
             <p className="owner-subs">구독자 {formatCount(video.channel.subscribers)}명</p>
           </div>
           <SubscribeButton channelId={video.channel.id} />
@@ -69,10 +76,7 @@ function VideoInfo({ video }: { video: VideoWithChannel }) {
             <Icon name="share" />
             <span>공유</span>
           </button>
-          <button className="pill hide-narrow">
-            <Icon name="download" />
-            <span>오프라인 저장</span>
-          </button>
+          <WatchLaterButton videoId={video.id} />
         </div>
       </div>
 
@@ -132,5 +136,16 @@ function WatchSkeleton() {
       <div className="skeleton-line" style={{ height: 28, width: '70%' }} />
       <div className="skeleton-line short" />
     </>
+  );
+}
+
+function WatchLaterButton({ videoId }: { videoId: string }) {
+  const { watchLater } = useUserState();
+  const saved = watchLater.includes(videoId);
+  return (
+    <button className="pill hide-narrow" onClick={() => userStore.toggleWatchLater(videoId)} aria-pressed={saved}>
+      <Icon name="clock" />
+      <span>{saved ? '저장됨' : '나중에 보기'}</span>
+    </button>
   );
 }
