@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { VideoWithChannel } from '@mytube/core/types';
 import { getRelatedVideos, getVideo } from '@mytube/core/videoService';
 import {
@@ -17,34 +17,55 @@ import { SubscribeButton } from '../components/SubscribeButton';
 import { RatingButtons } from '../components/RatingButtons';
 import { Comments } from '../components/Comments';
 import { NotFoundPage } from './NotFoundPage';
+import { playerStore } from '@mytube/core/playerStore';
+import { FullPlayer } from '../player/FullPlayer';
 
 // 시청 페이지: /watch/:videoId
 // 주소의 videoId가 이 페이지의 "입력값"이에요. 주소만 바뀌면 같은 컴포넌트가 다른 영상을 보여줘요.
 export function WatchPage() {
   const { videoId = '' } = useParams();
+  const navigate = useNavigate();
   const { data: video, loading } = useAsync(getVideo, videoId);
   const { data: related } = useAsync(getRelatedVideos, videoId);
+  const { playerPrefs } = useUserState();
 
   // 다른 영상으로 넘어가면 맨 위로 스크롤
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [videoId]);
 
-  // 영상을 불러오면 시청 기록에 남겨요 (전역 상태 → 저장소)
+  // 이 페이지가 플레이어에게 "이 영상을 크게 틀어 줘"라고 알려요.
+  // 미니 플레이어에서 같은 영상을 펼친 경우엔 이어서 재생(expand), 다른 영상이면 새로 재생(open).
   useEffect(() => {
-    if (video) userStore.recordWatch(video.id);
+    if (!video) return;
+    if (playerStore.getSnapshot().videoId === video.id) playerStore.expand();
+    else playerStore.open(video.id);
   }, [video]);
 
   if (!loading && video === null) return <NotFoundPage />;
 
+  const next = related?.[0];
+  const player = video ? (
+    <div className="player">
+      <FullPlayer key="player" next={next} onNext={() => next && navigate(`/watch/${next.id}`)} />
+    </div>
+  ) : (
+    <div className="player skeleton-block" />
+  );
+
   return (
-    <div className="watch">
-      <div className="watch-primary">
-        {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} />}
+    <div className={`watch ${playerPrefs.theater ? 'theater' : ''}`}>
+      {/* 영화관 모드: 플레이어가 위에 가로로 꽉 차고, 아래에 두 칸 */}
+      {playerPrefs.theater && <div className="theater-stage">{player}</div>}
+      <div className="watch-columns">
+        <div className="watch-primary">
+          {!playerPrefs.theater && player}
+          {loading || !video ? <WatchSkeleton /> : <VideoInfo video={video} />}
+        </div>
+        <aside className="watch-secondary">
+          {related?.map((v) => <CompactVideoCard key={v.id} video={v} />)}
+        </aside>
       </div>
-      <aside className="watch-secondary">
-        {related?.map((v) => <CompactVideoCard key={v.id} video={v} />)}
-      </aside>
     </div>
   );
 }
@@ -52,10 +73,6 @@ export function WatchPage() {
 function VideoInfo({ video }: { video: VideoWithChannel }) {
   return (
     <>
-      <div className="player">
-        {/* key를 주면 영상이 바뀔 때 플레이어를 새로 만들어서 처음부터 재생해요 */}
-        <video key={video.id} src={video.videoUrl} poster={video.thumbnailUrl} controls autoPlay />
-      </div>
       <h1 className="watch-title">{video.title}</h1>
 
       <div className="watch-owner-row">
@@ -132,7 +149,6 @@ function Description({ video }: { video: VideoWithChannel }) {
 function WatchSkeleton() {
   return (
     <>
-      <div className="player skeleton-block" />
       <div className="skeleton-line" style={{ height: 28, width: '70%' }} />
       <div className="skeleton-line short" />
     </>

@@ -15,6 +15,16 @@ export interface HistoryEntry {
 
 export type Theme = 'dark' | 'light';
 
+/** 플레이어 설정 — YouTube처럼 볼륨, 자동재생, 극장 모드를 기억해요 */
+export interface PlayerPrefs {
+  volume: number; // 0 ~ 1
+  muted: boolean;
+  autoplay: boolean; // 영상이 끝나면 다음 영상 자동 재생
+  theater: boolean; // 극장 모드 (넓은 플레이어)
+}
+
+export const DEFAULT_PLAYER_PREFS: PlayerPrefs = { volume: 1, muted: false, autoplay: true, theater: false };
+
 export interface UserState {
   loaded: boolean;
   subscriptions: string[]; // 채널 ID 목록
@@ -22,6 +32,7 @@ export interface UserState {
   history: HistoryEntry[]; // 최근 본 영상이 앞에
   watchLater: string[]; // 나중에 볼 영상 ID (최근에 넣은 것이 앞에)
   theme: Theme;
+  playerPrefs: PlayerPrefs;
 }
 
 const MAX_HISTORY = 200;
@@ -35,6 +46,7 @@ const INITIAL: UserState = {
   history: [],
   watchLater: [],
   theme: 'dark',
+  playerPrefs: DEFAULT_PLAYER_PREFS,
 };
 
 let state: UserState = INITIAL;
@@ -58,14 +70,17 @@ export const userStore = {
 
   /** 앱 시작 시 저장된 데이터를 불러와요 */
   async init() {
-    const [subscriptions, ratings, history, watchLater, theme] = await Promise.all([
+    const [subscriptions, ratings, history, watchLater, theme, savedPrefs] = await Promise.all([
       readJson<string[]>('subscriptions', DEFAULT_SUBSCRIPTIONS),
       readJson<Record<string, Rating>>('ratings', {}),
       readJson<HistoryEntry[]>('history', []),
       readJson<string[]>('watchLater', []),
       readJson<Theme>('theme', 'dark'),
+      readJson<Partial<PlayerPrefs>>('playerPrefs', {}),
     ]);
-    setState({ loaded: true, subscriptions, ratings, history, watchLater, theme });
+    // 저장된 값에 빠진 항목이 있어도(예: 새 설정이 추가됨) 기본값으로 채워요
+    const playerPrefs = { ...DEFAULT_PLAYER_PREFS, ...savedPrefs };
+    setState({ loaded: true, subscriptions, ratings, history, watchLater, theme, playerPrefs });
   },
 
   isSubscribed(channelId: string) {
@@ -115,6 +130,12 @@ export const userStore = {
       : [videoId, ...state.watchLater];
     setState({ watchLater });
     void writeJson('watchLater', watchLater);
+  },
+
+  setPlayerPrefs(patch: Partial<PlayerPrefs>) {
+    const playerPrefs = { ...state.playerPrefs, ...patch };
+    setState({ playerPrefs });
+    void writeJson('playerPrefs', playerPrefs);
   },
 
   setTheme(theme: Theme) {

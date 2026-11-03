@@ -61,3 +61,14 @@ describe('나중에 볼 동영상 / 좋아요 목록', () => {
     expect(likedVideoIds(userStore.getSnapshot()).sort()).toEqual(['v1', 'v3']);
   });
 });
+
+describe('플레이어 설정', () => {
+  it('일부만 바꿔도 나머지는 유지되고, 저장된 값이 일부만 있어도 기본값으로 채운다', async () => {
+    userStore.setPlayerPrefs({ volume: 0.3 });
+    expect(userStore.getSnapshot().playerPrefs).toEqual({ volume: 0.3, muted: false, autoplay: true, theater: false });
+    resetUserStoreForTest();
+    await userStore.init();
+    expect(userStore.getSnapshot().playerPrefs.volume).toBe(0.3);
+    expect(userStore.getSnapshot().playerPrefs.autoplay).toBe(true);
+  });
+});

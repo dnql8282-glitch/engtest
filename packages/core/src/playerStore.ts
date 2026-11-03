@@ -32,6 +32,10 @@ export const playerStore = {
   open(videoId: string) {
     setState({ videoId, mode: 'full' });
   },
+  /** 모드는 그대로 두고 영상만 바꾸기 (미니 플레이어에서 다음 영상) */
+  replace(videoId: string) {
+    setState({ videoId, mode: state.mode ?? 'full' });
+  },
   minimize() {
     if (state.videoId) setState({ ...state, mode: 'mini' });
   },

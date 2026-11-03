@@ -13,6 +13,8 @@ import { ChannelPage } from './pages/ChannelPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useUserState } from '@mytube/hooks/useUserStore';
+import { PlayerController } from './player/PlayerController';
+import { MiniPlayer } from './player/MiniPlayer';
 
 export default function App() {
   const { pathname } = useLocation();
@@ -56,6 +58,9 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+      {/* 재생 엔진과 미니 플레이어는 페이지 밖(앱 맨 위층)에 있어서 페이지를 옮겨도 살아 있어요 */}
+      <PlayerController />
+      <MiniPlayer />
     </div>
   );
 }
